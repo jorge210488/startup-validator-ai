@@ -10,8 +10,17 @@ class SubmitIdeaView(APIView):
 
     def post(self, request):
         idea_text = request.data.get('original_text')
-        idea = StartupIdea.objects.create(user=request.user, original_text=idea_text)  # ✔️ correcto}
+
+        if not idea_text:
+            return Response({'error': 'Falta el texto de la idea.'}, status=400)
+
+        idea = StartupIdea.objects.create(user=request.user, original_text=idea_text)
+        
         print("Llamando a Celery...")
         analyze_startup_idea.delay(idea.id, idea.original_text)
-        return Response({'message': 'Idea enviada. La IA está analizándola.'})
 
+        serializer = StartupIdeaSerializer(idea)
+        return Response({
+            'message': 'Idea enviada. La IA está analizándola.',
+            'idea': serializer.data
+        }, status=201)
