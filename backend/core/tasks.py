@@ -17,17 +17,21 @@ def analyze_startup_idea(idea_id, idea_text):
     5. Haz un análisis FODA (SWOT).
     """
 
+    idea = StartupIdea.objects.get(id=idea_id)  # Mover esto arriba
+
     try:
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}]
         )
         result = response.choices[0].message.content
+        idea.ai_response = result
+        idea.status = 'completed'
     except Exception as e:
         result = f"Error al procesar la idea: {str(e)}"
+        idea.ai_response = result
+        idea.status = 'error'
 
-    idea = StartupIdea.objects.get(id=idea_id)
-    idea.ai_response = result
     idea.save()
 
     return f"Idea {idea_id} analizada correctamente"

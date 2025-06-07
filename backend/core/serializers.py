@@ -8,7 +8,7 @@ class StartupIdeaSerializer(serializers.ModelSerializer):
     class Meta:
         model = StartupIdea
         fields = '__all__'
-        read_only_fields = ['user', 'ai_response', 'created_at', 'logo_url']
+        read_only_fields = ['user', 'ai_response', 'created_at', 'logo_url', 'status']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
