@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import StartupIdea
-from .serializers import StartupIdeaSerializer
+from .serializers import StartupIdeaSerializer, UserSerializer  # <-- No olvides importar UserSerializer
 from .tasks import analyze_startup_idea
 from openai import OpenAI
 from decouple import config
@@ -60,12 +60,24 @@ class UserIdeasView(APIView):
         ideas = StartupIdea.objects.filter(user=request.user).order_by('-created_at')
         serializer = StartupIdeaSerializer(ideas, many=True)
         return Response(serializer.data)
-    
-    
+
+
+class RetrieveIdeaView(APIView):  # 🚀 NUEVA VIEW
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, idea_id):
+        try:
+            idea = StartupIdea.objects.get(id=idea_id, user=request.user)
+        except StartupIdea.DoesNotExist:
+            return Response({'error': 'Idea no encontrada.'}, status=404)
+
+        serializer = StartupIdeaSerializer(idea)
+        return Response(serializer.data)
+
+
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
-
