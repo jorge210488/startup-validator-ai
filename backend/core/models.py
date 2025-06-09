@@ -19,3 +19,12 @@ class StartupIdea(models.Model):
     logo_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')  # <-- Nuevo campo
+
+class CreditTransaction(models.Model):
+    user = models.ForeignKey('core.User', on_delete=models.CASCADE, related_name='credit_transactions')
+    amount = models.IntegerField()  # Positivo o negativo
+    reason = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} | {self.amount} credits | {self.reason} | {self.created_at}'

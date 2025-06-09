@@ -1,11 +1,16 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import StartupIdea
-from .serializers import StartupIdeaSerializer, UserSerializer  # <-- No olvides importar UserSerializer
+from .models import StartupIdea, CreditTransaction
+from .serializers import StartupIdeaSerializer, UserSerializer, CreditTransactionSerializer
 from .tasks import analyze_startup_idea
+from .permissions import IsAdminUser
+from django.contrib.auth import get_user_model
+from rest_framework import status
 from openai import OpenAI
 from decouple import config
+
+User = get_user_model()
 
 client = OpenAI(api_key=config("OPENAI_API_KEY"))
 
@@ -24,25 +29,19 @@ class SubmitIdeaView(APIView):
         # ✅ Crear idea
         idea = StartupIdea.objects.create(user=request.user, original_text=idea_text)
 
-        # ✅ Generar logo
-        try:
-            image_response = client.images.generate(
-                prompt=f"Logo minimalista para una startup llamada basada en: {idea_text[:50]}",
-                n=1,
-                size="512x512"
-            )
-            logo_url = image_response.data[0].url
-            idea.logo_url = logo_url
-        except Exception as e:
-            logo_url = None  # Puedes registrar el error
-            idea.logo_url = None
-
-        # ✅ Llamar a Celery
+        # ✅ Llamar a Celery → solo análisis + logo en segundo plano
         analyze_startup_idea.delay(idea.id, idea.original_text)
 
         # ✅ Restar crédito
         request.user.credits -= 1
         request.user.save()
+
+        # Registrar transacción de créditos
+        CreditTransaction.objects.create(
+            user=request.user,
+            amount=-1,
+            reason=f'Envio de idea #{idea.id}'
+        )
 
         idea.save()
 
@@ -62,7 +61,7 @@ class UserIdeasView(APIView):
         return Response(serializer.data)
 
 
-class RetrieveIdeaView(APIView):  # 🚀 NUEVA VIEW
+class RetrieveIdeaView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, idea_id):
@@ -81,3 +80,62 @@ class MeView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+class UserCreditTransactionsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        transactions = CreditTransaction.objects.filter(user=request.user).order_by('-created_at')
+        serializer = CreditTransactionSerializer(transactions, many=True)
+        return Response(serializer.data)
+
+
+class AdminRechargeCreditsView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        amount = request.data.get('amount')
+        reason = request.data.get('reason', 'Recarga manual de créditos')
+
+        if not user_id or not amount:
+            return Response({'error': 'Faltan parámetros.'}, status=400)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado.'}, status=404)
+
+        # Actualizar créditos
+        user.credits += int(amount)
+        user.save()
+
+        # Registrar transacción
+        CreditTransaction.objects.create(
+            user=user,
+            amount=int(amount),
+            reason=reason
+        )
+
+        return Response({
+            'message': f'Se recargaron {amount} créditos al usuario {user.username}.',
+            'new_credits': user.credits
+        }, status=200)
+
+
+class AdminUserListView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get(self, request):
+        users = User.objects.all().order_by('id')
+        data = [
+            {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'credits': user.credits
+            }
+            for user in users
+        ]
+        return Response(data)
