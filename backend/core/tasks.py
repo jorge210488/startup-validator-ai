@@ -2,6 +2,10 @@ from celery import shared_task
 from openai import OpenAI
 from decouple import config
 from .models import StartupIdea
+from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 client = OpenAI(api_key=config('OPENAI_API_KEY'))
 
@@ -31,12 +35,11 @@ def analyze_startup_idea(idea_id, idea_text):
         idea.ai_response = result
         idea.status = 'error'
 
-    # 🟢 Intentar extraer el nombre sugerido (corregido)
+    # 🟢 Intentar extraer el nombre sugerido
     nombre_sugerido = "Startup"
     try:
         for line in result.split('\n'):
             if "2." in line and "nombre" in line.lower():
-                # Intentar extraer después de ":"
                 parts = line.split(":")
                 if len(parts) > 1:
                     nombre_sugerido = parts[1].strip()
@@ -66,6 +69,29 @@ def analyze_startup_idea(idea_id, idea_text):
     except Exception as e:
         idea.logo_url = None
 
+    # Guardar cambios en la idea
     idea.save()
+
+    # 🟢 Enviar email al usuario
+    User = get_user_model()
+    user_email = idea.user.email  # asumiendo que StartupIdea tiene FK a User con campo user
+
+    send_mail(
+        subject='Tu análisis de Startup está listo 🚀',
+        message=f'Hola! Tu análisis de la idea "{idea_text}" ya fue procesado. Puedes verlo en la plataforma.',
+        from_email=None,  # usará DEFAULT_FROM_EMAIL
+        recipient_list=[user_email],
+        fail_silently=True,
+    )
+
+    # 🟢 Emitir WebSocket notification
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"user_{idea.user.id}",
+        {
+            "type": "send_notification",
+            "message": f"Tu idea '{idea_text}' ya fue procesada 🎉",
+        }
+    )
 
     return f"Idea {idea_id} analizada correctamente"

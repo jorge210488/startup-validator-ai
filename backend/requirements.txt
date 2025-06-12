@@ -6,4 +6,6 @@ redis
 openai>=1.3.5
 pillow
 djangorestframework-simplejwt
+channels
+channels-redis
 
