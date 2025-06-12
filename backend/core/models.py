@@ -18,7 +18,8 @@ class StartupIdea(models.Model):
     ai_response = models.TextField(blank=True, null=True)
     logo_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')  # <-- Nuevo campo
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending') 
+    is_public = models.BooleanField(default=False)
 
 class CreditTransaction(models.Model):
     user = models.ForeignKey('core.User', on_delete=models.CASCADE, related_name='credit_transactions')

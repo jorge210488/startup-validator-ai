@@ -139,3 +139,23 @@ class AdminUserListView(APIView):
             for user in users
         ]
         return Response(data)
+
+class PublicIdeasView(APIView):
+    def get(self, request):
+        ideas = StartupIdea.objects.filter(is_public=True, status='completed').order_by('-created_at')
+        serializer = StartupIdeaSerializer(ideas, many=True)
+        return Response(serializer.data)
+
+class MakeIdeaPublicView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, idea_id):
+        try:
+            idea = StartupIdea.objects.get(id=idea_id, user=request.user)
+        except StartupIdea.DoesNotExist:
+            return Response({'error': 'Idea no encontrada.'}, status=404)
+
+        idea.is_public = True
+        idea.save()
+
+        return Response({'message': 'La idea ahora es pública.', 'is_public': idea.is_public}, status=200)
