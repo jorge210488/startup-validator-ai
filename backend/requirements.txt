@@ -8,4 +8,7 @@ pillow
 djangorestframework-simplejwt
 channels
 channels-redis
+dj-rest-auth
+django-allauth
+django-allauth[google,linkedin_oauth2]
 

@@ -46,14 +46,28 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # Terceras
     'rest_framework',
     'rest_framework.authtoken',
+    'dj_rest_auth',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', 
+    'allauth.socialaccount.providers.linkedin_oauth2',  
 
     # Tus apps personalizadas
     'core',
 ]
+
+SITE_ID = 1
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -165,4 +179,21 @@ CHANNEL_LAYERS = {
             "hosts": [config('REDIS_URL')],
         },
     },
+}
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': config('SOCIAL_AUTH_GOOGLE_CLIENT_ID'),
+            'secret': config('SOCIAL_AUTH_GOOGLE_SECRET'),
+            'key': ''
+        }
+    },
+    'linkedin_oauth2': {
+        'APP': {
+            'client_id': config('SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY'),
+            'secret': config('SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET'),
+            'key': ''
+        }
+    }
 }
