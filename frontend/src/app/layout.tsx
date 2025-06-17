@@ -1,22 +1,13 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import { ReactNode } from "react";
+import Navbar from "@/components/Navbar";
 
-export const metadata: Metadata = {
-  title: "Modo Oscuro Forzado",
-  description: "App con Tailwind y modo oscuro activado manualmente",
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      {" "}
-      {/* 👈 Modo oscuro forzado */}
-      <body className="bg-white text-black dark:bg-zinc-900 dark:text-white">
-        {children}
+    <html lang="es">
+      <body className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white transition-colors">
+        <Navbar />
+        <main className="px-4 py-6 max-w-5xl mx-auto">{children}</main>
       </body>
     </html>
   );
