@@ -39,6 +39,7 @@ AUTH_USER_MODEL = 'core.User'
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     # Apps de Django por defecto
     'django.contrib.admin',
     'django.contrib.auth',
@@ -81,7 +82,9 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -197,3 +200,5 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+CORS_ALLOW_ALL_ORIGINS = True

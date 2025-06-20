@@ -1,9 +1,9 @@
 import api from "./api";
 
-export const login = (email: string, password: string) => {
-  return api.post("/auth/login/", { email, password });
+export const login = (username: string, password: string) => {
+  return api.post("/login/", { username, password });
 };
 
 export const refreshToken = (refresh: string) => {
-  return api.post("/auth/token/refresh/", { refresh });
+  return api.post("/dj-rest-auth/token/refresh/", { refresh });
 };

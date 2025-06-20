@@ -1,18 +1,42 @@
 "use client";
 
 import { useState } from "react";
+import { login } from "@/services/authService";
+import { useAuthStore } from "@/store/authStore";
+import { getUserFromToken } from "@/utils/token";
 
-// ✅ Aquí declaras la prop que espera el componente
 type LoginModalProps = {
   onClose: () => void;
 };
 
 export default function LoginModal({ onClose }: LoginModalProps) {
-  const handleLogin = (e: React.FormEvent) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const setAuth = useAuthStore((state) => state.setAuth);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí puedes hacer la lógica real con axios
-    alert("Intentando iniciar sesión...");
-    // onClose(); // podrías cerrarlo aquí si quieres tras login exitoso
+    setError("");
+
+    try {
+      const res = await login(username, password);
+      const { access, refresh } = res.data;
+
+      localStorage.setItem("accessToken", access);
+      localStorage.setItem("refreshToken", refresh);
+
+      const user = getUserFromToken(access);
+      if (user) {
+        setAuth(access, user);
+      }
+
+      onClose(); // cerrar modal
+    } catch (err: any) {
+      setError("Usuario o contraseña inválidos.");
+      console.error("Login error:", err.response?.data || err.message);
+    }
   };
 
   return (
@@ -31,17 +55,23 @@ export default function LoginModal({ onClose }: LoginModalProps) {
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <input
-            type="email"
-            placeholder="Correo electrónico"
+            type="text"
+            placeholder="Nombre de usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring focus:ring-blue-400"
             required
           />
           <input
             type="password"
             placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring focus:ring-blue-400"
             required
           />
+
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
             type="submit"
@@ -50,6 +80,26 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             Ingresar
           </button>
         </form>
+
+        <div className="mt-4 flex flex-col gap-2">
+          <button
+            className="w-full py-2 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            onClick={() =>
+              (window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/dj-rest-auth/google/login/`)
+            }
+          >
+            🔵 Iniciar con Google
+          </button>
+
+          <button
+            className="w-full py-2 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            onClick={() =>
+              (window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/dj-rest-auth/linkedin_oauth2/login/`)
+            }
+          >
+            💼 Iniciar con LinkedIn
+          </button>
+        </div>
 
         <p className="text-sm text-center mt-4 text-gray-600 dark:text-gray-400">
           ¿No tienes cuenta?{" "}
