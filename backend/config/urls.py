@@ -14,6 +14,6 @@ urlpatterns = [
         path('login/', TokenObtainPairView.as_view(), name='token_login'),
         path('dj-rest-auth/', include('dj_rest_auth.urls')),
         path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
-        path('dj-rest-auth/social/', include('allauth.socialaccount.urls')),
+        path('accounts/', include('allauth.urls')),  # 👈 Necesario para social login
     ])),
 ]

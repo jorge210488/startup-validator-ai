@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { login } from "@/services/authService";
 import { useAuthStore } from "@/store/authStore";
-import { getUserFromToken } from "@/utils/token";
 
 type LoginModalProps = {
   onClose: () => void;
@@ -24,13 +23,12 @@ export default function LoginModal({ onClose }: LoginModalProps) {
       const res = await login(username, password);
       const { access, refresh } = res.data;
 
+      // Guardar tokens
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
 
-      const user = getUserFromToken(access);
-      if (user) {
-        setAuth(access, user);
-      }
+      // Actualizar el estado global (decodifica el user internamente)
+      setAuth(access);
 
       onClose(); // cerrar modal
     } catch (err: any) {

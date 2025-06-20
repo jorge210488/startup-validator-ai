@@ -1,15 +1,28 @@
+// ✅ /store/authStore.ts
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { getUserFromToken } from "@/utils/token";
 
-type AuthState = {
+interface AuthState {
   accessToken: string | null;
   user: any | null;
-  setAuth: (token: string, user: any) => void;
+  setAuth: (token: string) => void;
   logout: () => void;
-};
+}
 
-export const useAuthStore = create<AuthState>((set) => ({
-  accessToken: null,
-  user: null,
-  setAuth: (token, user) => set({ accessToken: token, user }),
-  logout: () => set({ accessToken: null, user: null }),
-}));
+export const useAuthStore = create(
+  persist<AuthState>(
+    (set) => ({
+      accessToken: null,
+      user: null,
+      setAuth: (token) => {
+        const user = getUserFromToken(token);
+        set({ accessToken: token, user });
+      },
+      logout: () => set({ accessToken: null, user: null }),
+    }),
+    {
+      name: "auth-storage",
+    }
+  )
+);
