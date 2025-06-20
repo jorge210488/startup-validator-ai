@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import LoginModal from "./LoginModal";
-import DarkModeToggle from "./DarkModeToggle"; // ahora importado separado
+import RegisterModal from "./RegisterModal"; // 👈 Nuevo
+import DarkModeToggle from "./DarkModeToggle";
 
 export default function Navbar() {
   const { user, logout, accessToken } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false); // 👈 Nuevo
 
   useEffect(() => {
     setIsMounted(true);
@@ -20,7 +22,6 @@ export default function Navbar() {
   return (
     <>
       <nav className="flex items-center justify-between px-6 py-4 shadow bg-white dark:bg-gray-900 dark:text-white transition-colors">
-        {/* Branding + navegación */}
         <div className="flex items-center gap-6">
           <Link href="/" className="text-xl font-bold">
             <span className="mr-2">🚀</span> Startup Validator AI
@@ -38,7 +39,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Usuario + sesión */}
         <div className="flex items-center gap-4">
           {accessToken && (
             <div className="text-sm">
@@ -57,12 +57,12 @@ export default function Navbar() {
               >
                 🔐 Iniciar sesión
               </button>
-              <Link
-                href="/register"
+              <button
+                onClick={() => setShowRegisterModal(true)} // 👈 Nuevo
                 className="px-4 py-2 rounded border border-blue-600 text-blue-600 hover:bg-blue-50 transition"
               >
                 ✨ Registrarse
-              </Link>
+              </button>
             </div>
           ) : (
             <button
@@ -75,9 +75,24 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Modal de login */}
       {showLoginModal && (
-        <LoginModal onClose={() => setShowLoginModal(false)} />
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onOpenRegister={() => {
+            setShowLoginModal(false); // cerrar login
+            setShowRegisterModal(true); // abrir register
+          }}
+        />
+      )}
+
+      {showRegisterModal && (
+        <RegisterModal
+          onClose={() => setShowRegisterModal(false)}
+          onOpenLogin={() => {
+            setShowRegisterModal(false); // cerrar register
+            setShowLoginModal(true); // abrir login
+          }}
+        />
       )}
     </>
   );

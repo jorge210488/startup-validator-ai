@@ -6,9 +6,13 @@ import { useAuthStore } from "@/store/authStore";
 
 type LoginModalProps = {
   onClose: () => void;
+  onOpenRegister: () => void; // ✅ nuevo prop
 };
 
-export default function LoginModal({ onClose }: LoginModalProps) {
+export default function LoginModal({
+  onClose,
+  onOpenRegister,
+}: LoginModalProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,14 +27,10 @@ export default function LoginModal({ onClose }: LoginModalProps) {
       const res = await login(username, password);
       const { access, refresh } = res.data;
 
-      // Guardar tokens
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
-
-      // Actualizar el estado global (decodifica el user internamente)
       setAuth(access);
-
-      onClose(); // cerrar modal
+      onClose();
     } catch (err: any) {
       setError("Usuario o contraseña inválidos.");
       console.error("Login error:", err.response?.data || err.message);
@@ -57,7 +57,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             placeholder="Nombre de usuario"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring focus:ring-blue-400"
+            className="px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
             required
           />
           <input
@@ -65,10 +65,9 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring focus:ring-blue-400"
+            className="px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
             required
           />
-
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
@@ -88,7 +87,6 @@ export default function LoginModal({ onClose }: LoginModalProps) {
           >
             🔵 Iniciar con Google
           </button>
-
           <button
             className="w-full py-2 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition"
             onClick={() =>
@@ -101,9 +99,15 @@ export default function LoginModal({ onClose }: LoginModalProps) {
 
         <p className="text-sm text-center mt-4 text-gray-600 dark:text-gray-400">
           ¿No tienes cuenta?{" "}
-          <a href="/register" className="text-blue-500 hover:underline">
+          <button
+            className="text-blue-500 hover:underline"
+            onClick={() => {
+              onClose(); // 👈 cerrar login
+              onOpenRegister(); // 👈 abrir register
+            }}
+          >
             Regístrate aquí
-          </a>
+          </button>
         </p>
       </div>
     </div>
