@@ -184,6 +184,7 @@ CHANNEL_LAYERS = {
     },
 }
 
+# FIX CREDENTIALS
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
