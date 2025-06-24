@@ -1,4 +1,3 @@
-// ✅ /store/authStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { getUserFromToken } from "@/utils/token";
@@ -15,11 +14,21 @@ export const useAuthStore = create(
     (set) => ({
       accessToken: null,
       user: null,
+
       setAuth: (token) => {
         const user = getUserFromToken(token);
+        localStorage.setItem("accessToken", token);
         set({ accessToken: token, user });
       },
-      logout: () => set({ accessToken: null, user: null }),
+
+      logout: () => {
+        set({ accessToken: null, user: null });
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("auth-storage");
+          localStorage.removeItem("accessToken");
+          window.location.href = "/";
+        }
+      },
     }),
     {
       name: "auth-storage",
