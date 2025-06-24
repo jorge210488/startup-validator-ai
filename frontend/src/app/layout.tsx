@@ -3,6 +3,7 @@ import "./globals.css";
 import { ReactNode } from "react";
 import Navbar from "@/components/Navbar";
 import { AuthInitializer } from "@/components/AuthInitializer";
+import Footer from "@/components/Footer";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <AuthInitializer />
         <Navbar />
         <main className="px-4 py-6 max-w-5xl mx-auto">{children}</main>
+        <Footer />
       </body>
     </html>
   );
