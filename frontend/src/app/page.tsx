@@ -3,10 +3,14 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
+import RegisterModal from "@/components/RegisterModal";
 
 export default function HomeView() {
   const [isMounted, setIsMounted] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { accessToken } = useAuthStore();
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -58,12 +62,27 @@ export default function HomeView() {
           Ingresa tu idea y recibe una descripción mejorada, nombre sugerido,
           análisis SWOT, tecnologías y más.
         </p>
-        <Link
-          href="/ideas/new"
-          className="px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700 transition text-lg"
-        >
-          💡 Probar gratis
-        </Link>
+        {accessToken ? (
+          <Link
+            href="/ideas/new"
+            className="px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700 transition text-lg"
+          >
+            💡 Probar gratis
+          </Link>
+        ) : (
+          <button
+            onClick={() => setShowRegisterModal(true)}
+            className="px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700 transition text-lg"
+          >
+            ✨ Crear cuenta para comenzar
+          </button>
+        )}
+        {showRegisterModal && (
+          <RegisterModal
+            onClose={() => setShowRegisterModal(false)}
+            onOpenLogin={() => {}}
+          />
+        )}
       </main>
     </div>
   );
