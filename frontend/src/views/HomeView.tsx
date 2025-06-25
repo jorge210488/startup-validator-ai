@@ -6,40 +6,38 @@ import Link from "next/link";
 
 export default function HomeView() {
   const [isMounted, setIsMounted] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    const updateTheme = () => {
-      setIsDarkMode(document.documentElement.classList.contains("dark"));
-    };
-    updateTheme();
-
-    const observer = new MutationObserver(() => updateTheme());
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
   }, []);
 
   if (!isMounted) return null;
 
   return (
-    <div className="flex flex-col flex-grow min-h-0 w-full relative text-gray-900 dark:text-white">
-      {/* Fondo Desktop */}
-      <div className="hidden sm:block absolute inset-0 -z-10">
+    <div className="relative min-h-screen w-full overflow-hidden text-white">
+      {/* Fondo Desktop CLARO */}
+      <div className="sm:block hidden absolute inset-0 -z-10 dark:hidden">
         <Image
-          src={isDarkMode ? "/fondo-o1.jpg" : "/fondo1.jpg"}
-          alt="Fondo"
+          src="/fondo1.jpg"
+          alt="Fondo claro"
           fill
           style={{ objectFit: "cover" }}
           priority
         />
       </div>
 
-      {/* Fondo Móvil */}
+      {/* Fondo Desktop OSCURO */}
+      <div className="sm:block hidden absolute inset-0 -z-10 dark:block">
+        <Image
+          src="/fondo-o1.jpg"
+          alt="Fondo oscuro"
+          fill
+          style={{ objectFit: "cover" }}
+          priority
+        />
+      </div>
+
+      {/* Fondo para móvil */}
       <div className="block sm:hidden absolute inset-0 -z-10">
         <Image
           src="/background-mobile.png"
@@ -50,7 +48,7 @@ export default function HomeView() {
         />
       </div>
 
-      <main className="flex flex-col items-center justify-center text-center px-6 flex-grow">
+      <main className="flex flex-col items-center justify-center text-center px-6 py-24 sm:py-32">
         <h1 className="text-4xl sm:text-6xl font-bold mb-6">
           Valida tu idea de startup con IA
         </h1>
