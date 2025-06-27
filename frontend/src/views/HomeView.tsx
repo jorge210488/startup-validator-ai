@@ -29,7 +29,7 @@ export default function HomeView() {
       {/* Fondo Desktop OSCURO */}
       <div className="sm:block hidden absolute inset-0 -z-10 dark:block">
         <Image
-          src="/fondo-o1.jpg"
+          src="/fondo-o1.png"
           alt="Fondo oscuro"
           fill
           style={{ objectFit: "cover" }}

@@ -35,7 +35,7 @@ export default function HomeView() {
       {/* Fondo Desktop */}
       <div className="hidden sm:block absolute inset-0 -z-10">
         <Image
-          src={isDarkMode ? "/fondo-o1.jpg" : "/fondo1.jpg"}
+          src={isDarkMode ? "/fondo-o1.png" : "/fondo1.jpg"}
           alt="Fondo"
           fill
           style={{ objectFit: "cover" }}
