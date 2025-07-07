@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
+import SubmitIdeaModal from "@/components/SubmitIdeaModal";
+import { getMyIdeas } from "@/services/ideasService";
 
 interface StartupIdea {
   id: number;
@@ -17,6 +19,7 @@ export default function IdeasListView() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [ideas, setIdeas] = useState<StartupIdea[]>([]);
   const { accessToken } = useAuthStore();
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -36,14 +39,18 @@ export default function IdeasListView() {
 
   useEffect(() => {
     if (accessToken) {
-      fetch("/api/ideas/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => setIdeas(data))
-        .catch((err) => console.error("Error al cargar ideas:", err));
+      getMyIdeas(accessToken)
+        .then((data) => {
+          if (Array.isArray(data)) {
+            console.log("📦 Ideas recibidas del backend:", data);
+
+            setIdeas(data);
+          } else {
+            console.error("❌ La respuesta no es un array:", data);
+            setIdeas([]);
+          }
+        })
+        .catch((err) => console.error("❌ Error al obtener ideas:", err));
     }
   }, [accessToken]);
 
@@ -76,12 +83,12 @@ export default function IdeasListView() {
       <main className="flex flex-col items-center justify-center text-center px-6 flex-grow">
         <h1 className="text-4xl sm:text-5xl font-bold mb-6">Mis ideas</h1>
 
-        <Link
-          href="/ideas/new"
+        <button
+          onClick={() => setShowSubmitModal(true)}
           className="mb-8 px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700 transition text-lg"
         >
           💡 Crear nueva idea
-        </Link>
+        </button>
 
         {ideas.length === 0 ? (
           <p className="text-lg">Aún no has generado ninguna idea.</p>
@@ -115,6 +122,24 @@ export default function IdeasListView() {
           </div>
         )}
       </main>
+      {showSubmitModal && (
+        <SubmitIdeaModal
+          onClose={() => {
+            setShowSubmitModal(false);
+
+            if (accessToken) {
+              getMyIdeas(accessToken)
+                .then((data) => setIdeas(data))
+                .catch((err) =>
+                  console.error(
+                    "❌ Error al recargar ideas después del modal:",
+                    err
+                  )
+                );
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
