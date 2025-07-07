@@ -12,3 +12,5 @@ dj-rest-auth
 django-allauth
 django-allauth[google,linkedin_oauth2]
 requests
+django-cors-headers
+cryptography>=42.0.0
