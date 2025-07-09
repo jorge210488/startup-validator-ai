@@ -23,3 +23,12 @@ export const getMyIdeas = async (token: string) => {
 
   return response.data; // ← esto será un array
 };
+
+export const getIdeaById = async (id: number, token: string) => {
+  const response = await api.get(`/ideas/${id}/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data; // ⬅ Devuelve solo una idea
+};

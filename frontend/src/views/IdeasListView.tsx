@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import SubmitIdeaModal from "@/components/SubmitIdeaModal";
 import { getMyIdeas } from "@/services/ideasService";
+import IdeaDetailModal from "@/components/IdeaDetailModal";
 
 interface StartupIdea {
   id: number;
@@ -20,6 +21,7 @@ export default function IdeasListView() {
   const [ideas, setIdeas] = useState<StartupIdea[]>([]);
   const { accessToken } = useAuthStore();
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [selectedIdeaId, setSelectedIdeaId] = useState<number | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -95,9 +97,9 @@ export default function IdeasListView() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full pb-12">
             {ideas.map((idea) => (
-              <Link
+              <button
                 key={idea.id}
-                href={`/ideas/${idea.id}`}
+                onClick={() => setSelectedIdeaId(idea.id)}
                 className="bg-white/10 hover:bg-white/20 backdrop-blur border border-white/20 p-6 rounded-xl transition text-left"
               >
                 <h2 className="text-xl font-semibold mb-2 truncate">
@@ -117,7 +119,7 @@ export default function IdeasListView() {
                 >
                   {idea.status.toUpperCase()}
                 </p>
-              </Link>
+              </button>
             ))}
           </div>
         )}
@@ -138,6 +140,12 @@ export default function IdeasListView() {
                 );
             }
           }}
+        />
+      )}
+      {selectedIdeaId && (
+        <IdeaDetailModal
+          ideaId={selectedIdeaId}
+          onClose={() => setSelectedIdeaId(null)}
         />
       )}
     </div>
