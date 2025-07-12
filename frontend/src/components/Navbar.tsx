@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import LoginModal from "./LoginModal";
-import RegisterModal from "./RegisterModal"; // 👈 Nuevo
+import RegisterModal from "./RegisterModal";
 import DarkModeToggle from "./DarkModeToggle";
 
 export default function Navbar() {
@@ -29,11 +29,17 @@ export default function Navbar() {
 
           {accessToken && (
             <>
-              <Link href="/ideas" className="hover:underline">
+              <Link
+                href="/ideas"
+                className="px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700 transition text-lg"
+              >
                 Mis ideas
               </Link>
-              <Link href="/ideas/new" className="hover:underline">
-                Nueva idea
+              <Link
+                href="/credits"
+                className="px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700 transition text-lg"
+              >
+                🪙 Ver transacciones
               </Link>
             </>
           )}
