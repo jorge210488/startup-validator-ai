@@ -32,3 +32,12 @@ export const adminRechargeCredits = async (
   );
   return response.data; // ← { message, new_credits }
 };
+
+export const getMe = async (token: string) => {
+  const response = await api.get("/me/", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data; // ← { id, username, email, credits }
+};

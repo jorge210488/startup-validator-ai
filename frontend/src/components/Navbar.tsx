@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import DarkModeToggle from "./DarkModeToggle";
+import { useCreditStore } from "@/store/creditStore";
 
 export default function Navbar() {
   const { user, logout, accessToken } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false); // 👈 Nuevo
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const { credits } = useCreditStore();
 
   useEffect(() => {
     setIsMounted(true);
@@ -47,8 +49,8 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           {accessToken && (
-            <div className="text-sm">
-              {user?.email && <span>{user.email}</span>} · {user?.credits ?? 0}{" "}
+            <div className="text-base sm:text-lg font-bold">
+              {user?.email && <span>{user.email}</span>} · {credits ?? 0}{" "}
               créditos
             </div>
           )}

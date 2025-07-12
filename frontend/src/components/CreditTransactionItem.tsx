@@ -39,19 +39,9 @@ const CreditTransactionItem: FC<Props> = ({ amount, reason, created_at }) => {
         >
           {isPositive ? `+${amount}` : amount} créditos
         </p>
-        <p
-          className={`text-sm mt-1 ${
-            isDarkMode ? "text-white" : "text-gray-800"
-          }`}
-        >
-          {reason}
-        </p>
+        <p className="text-sm mt-1 text-black dark:text-white">{reason}</p>
       </div>
-      <p
-        className={`text-sm mt-2 sm:mt-0 ${
-          isDarkMode ? "text-white" : "text-gray-600"
-        }`}
-      >
+      <p className="text-sm mt-2 sm:mt-0 text-black dark:text-white">
         {new Date(created_at).toLocaleString()}
       </p>
     </div>
