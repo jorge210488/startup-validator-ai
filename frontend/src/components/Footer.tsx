@@ -1,8 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Footer() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const scrollToTop = () => {
+    if (typeof window !== "undefined") {
+      const topElement = document.getElementById("top");
+      if (topElement) {
+        topElement.scrollIntoView({ behavior: "smooth" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <footer className="w-full bg-white dark:bg-gray-900 text-sm text-gray-600 dark:text-gray-300 shadow-inner transition-colors px-6 py-4">
       <div className="max-w-7xl mx-auto w-full flex justify-between items-start sm:items-center gap-4 flex-wrap">
@@ -12,12 +29,14 @@ export default function Footer() {
         </div>
 
         <div className="shrink-0">
-          <Link
-            href="/"
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
-          >
-            ⇧ Inicio
-          </Link>
+          {isClient && (
+            <button
+              onClick={scrollToTop}
+              className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+            >
+              ⇧ Inicio
+            </button>
+          )}
         </div>
       </div>
     </footer>

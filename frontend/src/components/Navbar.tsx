@@ -35,7 +35,7 @@ export default function Navbar() {
                 href="/ideas"
                 className="px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700 transition text-lg"
               >
-                Mis ideas
+                💡Mis ideas
               </Link>
               <Link
                 href="/credits"
@@ -66,7 +66,7 @@ export default function Navbar() {
                 🔐 Iniciar sesión
               </button>
               <button
-                onClick={() => setShowRegisterModal(true)} // 👈 Nuevo
+                onClick={() => setShowRegisterModal(true)}
                 className="px-4 py-2 rounded border border-blue-600 text-blue-600 hover:bg-blue-50 transition"
               >
                 ✨ Registrarse
@@ -87,8 +87,8 @@ export default function Navbar() {
         <LoginModal
           onClose={() => setShowLoginModal(false)}
           onOpenRegister={() => {
-            setShowLoginModal(false); // cerrar login
-            setShowRegisterModal(true); // abrir register
+            setShowLoginModal(false);
+            setShowRegisterModal(true);
           }}
         />
       )}
@@ -97,8 +97,8 @@ export default function Navbar() {
         <RegisterModal
           onClose={() => setShowRegisterModal(false)}
           onOpenLogin={() => {
-            setShowRegisterModal(false); // cerrar register
-            setShowLoginModal(true); // abrir login
+            setShowRegisterModal(false);
+            setShowLoginModal(true);
           }}
         />
       )}
