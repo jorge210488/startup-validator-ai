@@ -26,3 +26,11 @@ class CreditTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditTransaction
         fields = ['amount', 'reason', 'created_at']
+        
+# serializers.py
+
+class CheckoutSessionSerializer(serializers.Serializer):
+    credits = serializers.ChoiceField(choices=[5, 10, 20, 50, 100])
+
+class ConfirmSessionSerializer(serializers.Serializer):
+    session_id = serializers.CharField()

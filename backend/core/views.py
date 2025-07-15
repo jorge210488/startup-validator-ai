@@ -2,13 +2,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import StartupIdea, CreditTransaction
-from .serializers import StartupIdeaSerializer, UserSerializer, CreditTransactionSerializer
+from .serializers import StartupIdeaSerializer, UserSerializer, CreditTransactionSerializer, CheckoutSessionSerializer, ConfirmSessionSerializer
 from .tasks import analyze_startup_idea
 from .permissions import IsAdminUser
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from openai import OpenAI
 from decouple import config
+import stripe
+from django.conf import settings
 
 User = get_user_model()
 
@@ -159,3 +161,87 @@ class MakeIdeaPublicView(APIView):
         idea.save()
 
         return Response({'message': 'La idea ahora es pública.', 'is_public': idea.is_public}, status=200)
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+# Endpoint 1 - Crear sesión de Stripe Checkout
+class CreateStripePaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = CheckoutSessionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        credits = serializer.validated_data["credits"]
+
+        PRICE_MAP = {
+            5: settings.STRIPE_PRICE_5,
+            10: settings.STRIPE_PRICE_10,
+            20: settings.STRIPE_PRICE_20,
+            50: settings.STRIPE_PRICE_50,
+            100: settings.STRIPE_PRICE_100,
+        }
+
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                mode="payment",
+                line_items=[{
+                    "price": PRICE_MAP[credits],
+                    "quantity": 1,
+                }],
+                success_url=f"{settings.STRIPE_SUCCESS_URL}?session_id={{CHECKOUT_SESSION_ID}}",
+                cancel_url=settings.STRIPE_CANCEL_URL,
+                metadata={
+                    "user_id": request.user.id,
+                    "credits": credits
+                },
+                customer_email=request.user.email,
+            )
+
+            return Response({
+                "checkout_url": checkout_session.url
+            })
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+
+
+# views.py (continuación)
+
+class ConfirmPaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ConfirmSessionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        session_id = serializer.validated_data["session_id"]
+
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+
+            if session.payment_status != "paid":
+                return Response({"error": "Pago no completado"}, status=400)
+
+            # Obtener créditos de metadata
+            credits = int(session.metadata.get("credits", 0))
+
+            if credits not in [5, 10, 20, 50, 100]:
+                return Response({"error": "Cantidad inválida de créditos"}, status=400)
+
+            # Añadir créditos al usuario
+            request.user.credits += credits
+            request.user.save()
+
+            # Registrar la transacción
+            CreditTransaction.objects.create(
+                user=request.user,
+                amount=credits,
+                reason="Compra de créditos vía Stripe Checkout"
+            )
+
+            return Response({"message": "Créditos añadidos correctamente."})
+
+        except stripe.error.StripeError as e:
+            return Response({"error": str(e)}, status=400)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
