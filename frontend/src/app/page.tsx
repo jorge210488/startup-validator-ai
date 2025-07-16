@@ -54,7 +54,7 @@ export default function HomeView() {
         />
       </div>
 
-      <main className="flex flex-col items-center justify-center text-center px-6 flex-grow">
+      <main className="flex flex-col items-center justify-center text-center px-6 flex-grow bg-transparent">
         <h1 className="text-4xl sm:text-6xl font-bold mb-6">
           Valida tu idea de startup con IA
         </h1>
