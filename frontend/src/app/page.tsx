@@ -5,12 +5,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import RegisterModal from "@/components/RegisterModal";
+import LoginModal from "@/components/LoginModal";
 
 export default function HomeView() {
   const [isMounted, setIsMounted] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { accessToken } = useAuthStore();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -80,7 +82,19 @@ export default function HomeView() {
         {showRegisterModal && (
           <RegisterModal
             onClose={() => setShowRegisterModal(false)}
-            onOpenLogin={() => {}}
+            onOpenLogin={() => {
+              setShowRegisterModal(false);
+              setShowLoginModal(true);
+            }}
+          />
+        )}
+        {showLoginModal && (
+          <LoginModal
+            onClose={() => setShowLoginModal(false)}
+            onOpenRegister={() => {
+              setShowLoginModal(false);
+              setShowRegisterModal(true);
+            }}
           />
         )}
       </main>
