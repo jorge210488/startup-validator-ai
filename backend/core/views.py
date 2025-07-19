@@ -11,6 +11,9 @@ from openai import OpenAI
 from decouple import config
 import stripe
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+import json
 
 User = get_user_model()
 
@@ -205,9 +208,6 @@ class CreateStripePaymentView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=500)
 
-
-# views.py (continuación)
-
 class ConfirmPaymentView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -245,3 +245,43 @@ class ConfirmPaymentView(APIView):
             return Response({"error": str(e)}, status=400)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        print("⚠️ Invalid payload:", e)
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        print("⚠️ Invalid signature:", e)
+        return HttpResponse(status=400)
+
+    print("✅ EVENT RECEIVED:", event["type"])
+
+    # Solo si el pago fue completado
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+
+        customer_email = session.get("customer_email")
+        amount_total = session.get("amount_total")  # en centavos
+        credits = int(amount_total / 100)  # cada dólar = 1 crédito
+
+        print(f"🎉 Pago recibido de {customer_email}. Créditos a recargar: {credits}")
+
+        # Actualizar al usuario
+        try:
+            user = User.objects.get(email=customer_email)
+            user.credits += credits
+            user.save()
+            print("✅ Créditos recargados.")
+        except User.DoesNotExist:
+            print(f"⚠️ Usuario con email {customer_email} no encontrado.")
+
+    return HttpResponse(status=200)

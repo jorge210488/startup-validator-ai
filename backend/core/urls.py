@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import SubmitIdeaView, UserIdeasView, RetrieveIdeaView, MeView, UserCreditTransactionsView, AdminRechargeCreditsView, AdminUserListView, PublicIdeasView, MakeIdeaPublicView, CreateStripePaymentView, ConfirmPaymentView
-
+from .views import SubmitIdeaView, UserIdeasView, RetrieveIdeaView, MeView, UserCreditTransactionsView, AdminRechargeCreditsView, AdminUserListView, PublicIdeasView, MakeIdeaPublicView, CreateStripePaymentView, ConfirmPaymentView, stripe_webhook
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path('submit-idea/', SubmitIdeaView.as_view(), name='submit_idea'),
@@ -15,5 +15,6 @@ urlpatterns = [
      # Stripe endpoints 👇
     path('stripe/create-payment/', CreateStripePaymentView.as_view(), name='stripe_create_session'),
     path('stripe/confirm-payment/', ConfirmPaymentView.as_view(), name='stripe_confirm_session'),
+    path("stripe/webhook/", stripe_webhook, name="stripe_webhook"),
 ]
 
