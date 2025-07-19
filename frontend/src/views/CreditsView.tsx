@@ -7,6 +7,7 @@ import { getMyCreditTransactions } from "@/services/creditsService";
 import CreditTransactionItem from "@/components/CreditTransactionItem";
 import Link from "next/link";
 import { useCreditStore } from "@/store/creditStore";
+import StripePaymentModal from "@/components/StripePaymentModal";
 
 interface Transaction {
   amount: number;
@@ -25,6 +26,7 @@ export default function CreditsView() {
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showStripeModal, setShowStripeModal] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -86,12 +88,12 @@ export default function CreditsView() {
             Créditos disponibles: {credits}
           </div>
 
-          <Link
-            href="#"
+          <button
+            onClick={() => setShowStripeModal(true)}
             className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition text-lg shadow-md text-black dark:text-white"
           >
             ➕ Recargar créditos
-          </Link>
+          </button>
         </div>
 
         {loading ? (
@@ -106,6 +108,9 @@ export default function CreditsView() {
           </div>
         )}
       </main>
+      {showStripeModal && (
+        <StripePaymentModal onClose={() => setShowStripeModal(false)} />
+      )}
     </div>
   );
 }

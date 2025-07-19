@@ -266,22 +266,24 @@ def stripe_webhook(request):
 
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        print("📦 Session:", json.dumps(session, indent=2))
-        email = session.get('customer_details', {}).get('email')
-
-        if not email:
-            print("⚠️ No se encontró el email en session")
+        # Extraer metadatos de la sesión de Stripe
+        credits = int(session.get('metadata', {}).get('credits', 0))
+        user_id = session.get('metadata', {}).get('user_id')
+        if not user_id or not credits:
+            print("⚠️ Metadatos incompletos en la sesión:", session.get('metadata'))
             return HttpResponse(status=200)
-
         try:
-            user = User.objects.get(email=email)
-            profile = user.profile
-            profile.credits += 10
-            profile.save()
-            print(f"🟢 Créditos actualizados para {email}")
+            user = User.objects.get(id=user_id)
+            user.credits += credits
+            user.save()
+            # Registrar transacción de crédito opcional
+            CreditTransaction.objects.create(user=user, amount=credits,
+                                            reason="Compra Stripe")
+            print(f"🟢 Créditos (+{credits}) actualizados para usuario {user.email}")
         except User.DoesNotExist:
-            print(f"❌ Usuario con email {email} no encontrado")
+            print(f"❌ Usuario con ID {user_id} no encontrado")
         except Exception as e:
-            print("🔥 Error al actualizar créditos:", str(e))
+            print("🔥 Error al actualizar créditos:", e)
+
 
     return HttpResponse(status=200)
