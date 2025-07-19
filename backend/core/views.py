@@ -248,40 +248,40 @@ class ConfirmPaymentView(APIView):
 
 @csrf_exempt
 def stripe_webhook(request):
+    print("🌐 Webhook recibido")
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    event = None
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
     except ValueError as e:
-        print("⚠️ Invalid payload:", e)
+        print("❌ Error de payload:", e)
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
-        print("⚠️ Invalid signature:", e)
+        print("❌ Error de firma:", e)
         return HttpResponse(status=400)
 
-    print("✅ EVENT RECEIVED:", event["type"])
+    print("✅ Evento verificado:", event["type"])
 
-    # Solo si el pago fue completado
-    if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        print("📦 Session:", json.dumps(session, indent=2))
+        email = session.get('customer_details', {}).get('email')
 
-        customer_email = session.get("customer_email")
-        amount_total = session.get("amount_total")  # en centavos
-        credits = int(amount_total / 100)  # cada dólar = 1 crédito
+        if not email:
+            print("⚠️ No se encontró el email en session")
+            return HttpResponse(status=200)
 
-        print(f"🎉 Pago recibido de {customer_email}. Créditos a recargar: {credits}")
-
-        # Actualizar al usuario
         try:
-            user = User.objects.get(email=customer_email)
-            user.credits += credits
-            user.save()
-            print("✅ Créditos recargados.")
+            user = User.objects.get(email=email)
+            profile = user.profile
+            profile.credits += 10
+            profile.save()
+            print(f"🟢 Créditos actualizados para {email}")
         except User.DoesNotExist:
-            print(f"⚠️ Usuario con email {customer_email} no encontrado.")
+            print(f"❌ Usuario con email {email} no encontrado")
+        except Exception as e:
+            print("🔥 Error al actualizar créditos:", str(e))
 
     return HttpResponse(status=200)
