@@ -41,3 +41,20 @@ export const getMe = async (token: string) => {
   });
   return response.data; // ← { id, username, email, credits }
 };
+
+// 🔹 Confirmar pago de Stripe desde frontend
+export const confirmStripeSession = async (
+  sessionId: string,
+  token: string
+) => {
+  const response = await api.post(
+    "/stripe/confirm-payment/",
+    { session_id: sessionId },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data; // ← { message } o { error }
+};

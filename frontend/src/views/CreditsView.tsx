@@ -56,7 +56,7 @@ export default function CreditsView() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex flex-col flex-grow min-h-0 w-full relative text-gray-900 dark:text-white">
+    <div className="flex flex-col flex-grow min-h-0 w-full relative text-gray-900 dark:text-white pt-40 md:pt-12">
       {/* Fondo Desktop */}
       <div className="hidden sm:block absolute inset-0 -z-10">
         <Image
