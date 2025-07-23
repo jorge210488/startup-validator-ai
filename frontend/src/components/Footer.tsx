@@ -21,7 +21,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-transparent fixed bottom-0 left-0 z-20 text-sm text-gray-600 dark:text-gray-300 transition-colors">
+    <footer className="w-full bg-transparent absolute bottom-0 left-0 z-20 text-sm text-gray-600 dark:text-gray-300 transition-colors">
       <div className="max-w-7xl mx-auto w-full flex justify-between items-start sm:items-center gap-4 flex-wrap">
         <div className="flex-1 min-w-0 text-gray-900 dark:text-white">
           © {new Date().getFullYear()} Startup Validator AI · Todos los derechos

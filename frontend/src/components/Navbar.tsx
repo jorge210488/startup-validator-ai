@@ -23,7 +23,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full z-20 bg-transparent text-white dark:text-white transition-colors mt-1 px-2">
+      <nav className="absolute top-1 left-0 w-full z-20 bg-transparent text-white dark:text-white transition-colors px-2">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full">
           {/* FILA 1 - LOGO */}
           <div className="flex justify-center md:justify-start items-center gap-6 mb-4 md:mb-0">

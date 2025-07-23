@@ -38,9 +38,9 @@ export default function HomeView() {
       </div>
 
       {/* Fondo para móvil */}
-      <div className="block sm:hidden absolute inset-0 -z-10">
+      <div className="block sm:hidden absolute inset-0 -z-10 dark:block">
         <Image
-          src="/background-mobile.png"
+          src="/fondo-m1.png"
           alt="Startup background mobile"
           fill
           style={{ objectFit: "cover" }}

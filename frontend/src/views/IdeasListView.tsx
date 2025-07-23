@@ -74,7 +74,7 @@ export default function IdeasListView() {
       {/* Fondo Móvil */}
       <div className="block sm:hidden absolute inset-0 -z-10">
         <Image
-          src="/background-mobile.png"
+          src={isDarkMode ? "/fondo-m2.png" : "/fondo-s-m2.png"}
           alt="Startup background mobile"
           fill
           style={{ objectFit: "cover" }}
