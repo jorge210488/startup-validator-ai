@@ -60,7 +60,7 @@ export default function CreditsView() {
       {/* Fondo Desktop */}
       <div className="hidden sm:block absolute inset-0 -z-10">
         <Image
-          src={isDarkMode ? "/fondo-o2.png" : "/fondo2.jpg"}
+          src={isDarkMode ? "/fondo-o3.png" : "/fondo3.jpg"}
           alt="Fondo"
           fill
           style={{ objectFit: "cover" }}
@@ -71,7 +71,7 @@ export default function CreditsView() {
       {/* Fondo Móvil */}
       <div className="block sm:hidden absolute inset-0 -z-10">
         <Image
-          src="/background-mobile.png"
+          src={isDarkMode ? "/fondo-m3.png" : "/fondo-s-m3.png"}
           alt="Fondo mobile"
           fill
           style={{ objectFit: "cover" }}

@@ -48,7 +48,7 @@ export default function HomeView() {
       {/* Fondo Móvil */}
       <div className="block sm:hidden absolute inset-0 -z-10">
         <Image
-          src="/background-mobile.png"
+          src={isDarkMode ? "/fondo-m1.png" : "/fondo-s-m1.png"}
           alt="Startup background mobile"
           fill
           style={{ objectFit: "cover" }}
