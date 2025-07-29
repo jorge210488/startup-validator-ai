@@ -59,28 +59,22 @@ export default function IdeasListView() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex flex-col flex-grow min-h-0 w-full relative text-gray-900 dark:text-white">
+    <div className="flex flex-col flex-grow min-h-0 w-full relative md:pb-0 pb-20 pt-40 text-gray-900 dark:text-white">
       {/* Fondo Desktop */}
-      <div className="hidden sm:block absolute inset-0 -z-10">
-        <Image
-          src={isDarkMode ? "/fondo-o2.png" : "/fondo2.jpg"}
-          alt="Fondo"
-          fill
-          style={{ objectFit: "cover" }}
-          priority
-        />
-      </div>
+      <div
+        className={`hidden sm:block absolute inset-0 -z-10 bg-top bg-cover bg-repeat-y ${
+          isDarkMode ? "bg-[url('/fondo-o2.png')]" : "bg-[url('/fondo2.jpg')]"
+        }`}
+      />
 
       {/* Fondo Móvil */}
-      <div className="block sm:hidden absolute inset-0 -z-10">
-        <Image
-          src={isDarkMode ? "/fondo-m2.png" : "/fondo-s-m2.png"}
-          alt="Startup background mobile"
-          fill
-          style={{ objectFit: "cover" }}
-          priority
-        />
-      </div>
+      <div
+        className={`block sm:hidden absolute inset-0 -z-10 bg-top bg-cover bg-repeat-y ${
+          isDarkMode
+            ? "bg-[url('/fondo-m2.png')]"
+            : "bg-[url('/fondo-s-m2.png')]"
+        }`}
+      />
 
       <main className="flex flex-col items-center justify-center text-center px-6 flex-grow">
         <h1 className="text-4xl sm:text-5xl font-bold mb-6">Mis ideas</h1>

@@ -10,7 +10,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="es" suppressHydrationWarning>
       <body className="bg-transparent text-gray-900 dark:text-white transition-colors">
         {/* 👇👇👇 id="top" agregado para que scrollIntoView funcione 👇👇👇 */}
-        <div id="top" className="min-h-screen flex flex-col">
+        <div id="top" className="min-h-dvh flex flex-col">
           <ThemeProvider>
             <AuthInitializer />
             <Navbar />

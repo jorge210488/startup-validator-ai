@@ -66,7 +66,7 @@ export default function HomeView() {
         </p>
         {accessToken ? (
           <Link
-            href="/ideas/new"
+            href="/ideas"
             className="px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700 transition text-lg"
           >
             💡 Probar gratis
