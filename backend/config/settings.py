@@ -223,3 +223,14 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(weeks=1),  # o days=7
+    'REFRESH_TOKEN_LIFETIME': timedelta(weeks=4),  # por ejemplo, 1 mes
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+

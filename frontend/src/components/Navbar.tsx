@@ -36,13 +36,21 @@ export default function Navbar() {
               <div className="hidden md:flex items-center gap-4">
                 <Link
                   href="/ideas"
-                  className="px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700 transition text-lg"
+                  className="px-3 py-1.5 rounded-lg 
+  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+  dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+  transition-all duration-300 text-base"
                 >
                   💡Mis ideas
                 </Link>
                 <Link
                   href="/credits"
-                  className="px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700 transition text-lg"
+                  className="px-3 py-1.5 rounded-lg 
+  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+  dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+  transition-all duration-300 text-base"
                 >
                   🔄 Ver transacciones
                 </Link>
@@ -58,27 +66,39 @@ export default function Navbar() {
                 <div className="flex gap-4">
                   <Link
                     href="/ideas"
-                    className="px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700 transition text-lg"
+                    className="px-3 py-1.5 rounded-lg 
+  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+  dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+  transition-all duration-300 text-base"
                   >
                     💡Mis ideas
                   </Link>
                   <Link
                     href="/credits"
-                    className="px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700 transition text-lg"
+                    className="px-3 py-1.5 rounded-lg 
+  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+  dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+  transition-all duration-300 text-base"
                   >
                     🔄 Ver transacciones
                   </Link>
                 </div>
 
                 <div className="flex gap-4 items-center">
-                  <div className="text-base font-bold">
+                  <div className="text-base font-bold text-black dark:text-white">
                     {user?.email && <span>{user.email}</span>} · {credits ?? 0}{" "}
                     créditos
                   </div>
                   <DarkModeToggle />
                   <button
                     onClick={logout}
-                    className="px-4 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition"
+                    className="px-3 py-1.5 rounded-lg 
+  bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 
+  dark:from-gray-600 dark:via-gray-700 dark:to-gray-800 
+  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+  transition-all duration-300 text-base"
                   >
                     Cerrar sesión
                   </button>
@@ -89,14 +109,18 @@ export default function Navbar() {
             {/* VISTA MD+ LOGUEADO */}
             {accessToken && (
               <div className="hidden md:flex items-center gap-4 text-base font-bold">
-                <div>
+                <div className="text-black dark:text-white">
                   {user?.email && <span>{user.email}</span>} · {credits ?? 0}{" "}
                   créditos
                 </div>
                 <DarkModeToggle />
                 <button
                   onClick={logout}
-                  className="px-4 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition"
+                  className="px-3 py-1.5 rounded-lg 
+  bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 
+  dark:from-gray-600 dark:via-gray-700 dark:to-gray-800 
+  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+  transition-all duration-300 text-base"
                 >
                   Cerrar sesión
                 </button>

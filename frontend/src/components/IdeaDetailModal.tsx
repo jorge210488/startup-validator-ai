@@ -105,17 +105,19 @@ export default function IdeaDetailModal({
 
             {/* Estado */}
             <div className="flex justify-center mt-2">
-              <span
-                className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-white ${
-                  idea.status === "completed"
-                    ? "bg-green-600"
-                    : idea.status === "pending"
-                    ? "bg-yellow-500"
-                    : "bg-red-600"
-                }`}
-              >
-                {idea.status.toUpperCase()}
-              </span>
+              <div className="flex justify-center mt-2">
+                <span
+                  className={`inline-block px-3 py-1 rounded-full text-sm font-semibold shadow-md ${
+                    idea.status === "completed"
+                      ? "text-white bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"
+                      : idea.status === "pending"
+                      ? "text-black dark:text-white bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500"
+                      : "text-white bg-gradient-to-r from-rose-500 via-red-500 to-pink-500"
+                  }`}
+                >
+                  {idea.status.toUpperCase()}
+                </span>
+              </div>
             </div>
 
             {/* Mensaje si está pendiente */}

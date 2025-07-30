@@ -67,14 +67,22 @@ export default function HomeView() {
         {accessToken ? (
           <Link
             href="/ideas"
-            className="px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700 transition text-lg"
+            className="px-6 py-3 rounded-lg bg-gradient-to-r 
+    from-indigo-500 via-purple-500 to-pink-500 
+    dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+    text-white font-semibold hover:brightness-110 shadow-md hover:shadow-lg 
+    transition-all duration-300 text-lg"
           >
             💡 Probar gratis
           </Link>
         ) : (
           <button
             onClick={() => setShowRegisterModal(true)}
-            className="px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700 transition text-lg"
+            className="px-6 py-3 rounded-lg bg-gradient-to-r 
+    from-indigo-500 via-purple-500 to-pink-500 
+    dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+    text-white font-semibold hover:brightness-110 shadow-md hover:shadow-lg 
+    transition-all duration-300 text-lg"
           >
             ✨ Crear cuenta para comenzar
           </button>

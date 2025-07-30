@@ -56,7 +56,7 @@ export default function CreditsView() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex flex-col flex-grow min-h-0 w-full relative text-gray-900 dark:text-white pt-40 md:pt-12">
+    <div className="flex flex-col flex-grow min-h-0 w-full md:pb-0 pb-20 relative text-gray-900 dark:text-white pt-40 md:pt-12">
       {/* Fondo Desktop */}
       <div className="hidden sm:block absolute inset-0 -z-10">
         <Image
@@ -84,13 +84,21 @@ export default function CreditsView() {
 
         {/* 🟢 Bloque de resumen */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-10">
-          <div className="bg-green-600 px-6 py-3 rounded-xl text-lg font-semibold shadow-md text-black dark:text-white">
+          <div
+            className="px-6 py-3 rounded-xl text-lg font-semibold shadow-md text-white
+  bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600
+  dark:from-emerald-500 dark:via-teal-600 dark:to-cyan-700
+"
+          >
             Créditos disponibles: {credits}
           </div>
 
           <button
             onClick={() => setShowStripeModal(true)}
-            className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition text-lg shadow-md text-black dark:text-white"
+            className="px-6 py-3 rounded-xl text-lg font-semibold shadow-md text-white
+    bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+    dark:from-indigo-600 dark:via-purple-600 dark:to-pink-600
+    hover:brightness-110 hover:shadow-lg transition-all duration-300"
           >
             ➕ Recargar créditos
           </button>
