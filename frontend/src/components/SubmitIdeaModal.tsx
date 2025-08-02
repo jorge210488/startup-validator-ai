@@ -70,7 +70,11 @@ export default function SubmitIdeaModal({ onClose }: SubmitIdeaModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded py-2 transition disabled:opacity-50"
+            className="w-full py-3 rounded-xl text-lg font-semibold shadow-md text-white
+    bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+    dark:from-indigo-600 dark:via-purple-600 dark:to-pink-600
+    hover:brightness-110 hover:shadow-lg transition-all duration-300
+    disabled:opacity-50"
           >
             {loading ? "Enviando..." : "Enviar idea"}
           </button>

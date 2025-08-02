@@ -47,7 +47,7 @@ export default function IdeaDetailModal({
   }, [ideaId, accessToken]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4 pb-20">
       <div
         ref={modalRef}
         className="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md max-h-[90vh] p-6 relative animate-fade-in-up overflow-y-auto"
