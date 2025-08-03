@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { recargarCreditos } from "@/services/adminService";
+import type { AdminUser } from "@/views/AdminView"; // Ajusta la ruta si es otra
 
 type RechargeCreditModalProps = {
-  user: {
-    id: number;
-    username: string;
-  };
+  user: AdminUser;
   onClose: () => void;
+  onUserUpdate: (updatedUser: AdminUser) => void;
 };
 
 const CREDIT_OPTIONS = [5, 10, 20, 50, 100];
@@ -17,6 +16,7 @@ const CREDIT_OPTIONS = [5, 10, 20, 50, 100];
 export default function RechargeCreditModal({
   user,
   onClose,
+  onUserUpdate,
 }: RechargeCreditModalProps) {
   const { accessToken } = useAuthStore();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -39,8 +39,21 @@ export default function RechargeCreditModal({
     setLoading(true);
     setError("");
     try {
-      await recargarCreditos(user.id, selectedAmount, reason, accessToken);
+      const response = await recargarCreditos(
+        user.id,
+        selectedAmount,
+        reason,
+        accessToken
+      );
       setSuccess(true);
+      onUserUpdate({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        credits: response.new_credits,
+        is_active: true,
+      });
+
       setTimeout(onClose, 1500); // Cierra el modal después de un segundo y medio
     } catch (err: any) {
       console.error("Error al recargar créditos:", err);

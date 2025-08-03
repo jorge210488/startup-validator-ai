@@ -7,12 +7,14 @@ import { getAdminUsers } from "@/services/adminService";
 // Importar los componentes de modales de recarga y suspensión (a implementar por separado)
 import RechargeCreditModal from "@/components//Admin/RechargeCreditModal";
 import SuspendUserModal from "@/components/Admin/SuspendUserModal";
+import EnableUserModal from "@/components/Admin/EnableUserModal";
 
-interface AdminUser {
+export interface AdminUser {
   id: number;
   username: string;
   email: string;
   credits: number;
+  is_active: boolean;
 }
 
 export default function AdminDashboard() {
@@ -23,6 +25,13 @@ export default function AdminDashboard() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userToRecharge, setUserToRecharge] = useState<AdminUser | null>(null);
   const [userToSuspend, setUserToSuspend] = useState<AdminUser | null>(null);
+  const [userToEnable, setUserToEnable] = useState<AdminUser | null>(null);
+
+  const updateUserInList = (updatedUser: AdminUser) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+    );
+  };
 
   // Detectar cambios de tema (claro/oscuro) para actualizar el fondo
   useEffect(() => {
@@ -115,18 +124,35 @@ export default function AdminDashboard() {
                   >
                     Recargar
                   </button>
-                  <button
-                    onClick={() => {
-                      setUserToSuspend(user);
-                      setUserToRecharge(null);
-                    }}
-                    className="px-4 py-2 rounded-lg text-white 
-                               bg-gradient-to-r from-red-500 to-red-600 
-                               dark:from-red-600 dark:to-red-700
-                               hover:brightness-110 hover:shadow-lg transition-all duration-300"
-                  >
-                    Suspender
-                  </button>
+                  {user.is_active ? (
+                    <button
+                      onClick={() => {
+                        setUserToSuspend(user);
+                        setUserToRecharge(null);
+                        setUserToEnable(null);
+                      }}
+                      className="px-4 py-2 rounded-lg text-white 
+               bg-gradient-to-r from-red-500 to-red-600 
+               dark:from-red-600 dark:to-red-700
+               hover:brightness-110 hover:shadow-lg transition-all duration-300"
+                    >
+                      Suspender
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setUserToEnable(user);
+                        setUserToSuspend(null);
+                        setUserToRecharge(null);
+                      }}
+                      className="px-4 py-2 rounded-lg text-white 
+               bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600
+               dark:from-emerald-500 dark:via-teal-600 dark:to-cyan-700
+               hover:brightness-110 hover:shadow-lg transition-all duration-300"
+                    >
+                      Habilitar
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -139,12 +165,21 @@ export default function AdminDashboard() {
         <RechargeCreditModal
           user={userToRecharge}
           onClose={() => setUserToRecharge(null)}
+          onUserUpdate={updateUserInList}
         />
       )}
       {userToSuspend && (
         <SuspendUserModal
           user={userToSuspend}
           onClose={() => setUserToSuspend(null)}
+          onUserUpdate={updateUserInList}
+        />
+      )}
+      {userToEnable && (
+        <EnableUserModal
+          user={userToEnable}
+          onClose={() => setUserToEnable(null)}
+          onUserUpdate={updateUserInList}
         />
       )}
     </div>

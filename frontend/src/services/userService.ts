@@ -20,3 +20,18 @@ export const suspenderUsuario = async (
 
   return response.data;
 };
+
+// frontend/services/userService.ts
+export const habilitarUsuario = async (user_id: number, token: string) => {
+  const response = await api.post(
+    "/admin-habilitar-usuario/",
+    { user_id },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};

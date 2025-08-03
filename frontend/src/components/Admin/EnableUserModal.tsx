@@ -2,29 +2,28 @@
 
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { suspenderUsuario } from "@/services/userService";
+import { habilitarUsuario } from "@/services/userService";
 import type { AdminUser } from "@/views/AdminView";
 
-type SuspendUserModalProps = {
+type EnableUserModalProps = {
   user: AdminUser;
   onClose: () => void;
   onUserUpdate: (updatedUser: AdminUser) => void;
 };
 
-export default function SuspendUserModal({
+export default function EnableUserModal({
   user,
   onClose,
   onUserUpdate,
-}: SuspendUserModalProps) {
+}: EnableUserModalProps) {
   const { accessToken } = useAuthStore();
-  const [reason, setReason] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSuspend = async () => {
-    if (!accessToken || !reason.trim()) {
-      setError("Debes ingresar un motivo para la suspensión.");
+  const handleEnable = async () => {
+    if (!accessToken) {
+      setError("No se encontró el token de autenticación.");
       return;
     }
 
@@ -32,13 +31,13 @@ export default function SuspendUserModal({
     setError("");
 
     try {
-      await suspenderUsuario(user.id, reason, accessToken);
+      await habilitarUsuario(user.id, accessToken);
       setSuccess(true);
-      onUserUpdate({ ...user, is_active: false });
+      onUserUpdate({ ...user, is_active: true });
       setTimeout(onClose, 1500);
     } catch (err) {
-      console.error("Error al suspender usuario:", err);
-      setError("Hubo un error al suspender al usuario.");
+      console.error("Error al habilitar usuario:", err);
+      setError("Hubo un error al habilitar al usuario.");
     } finally {
       setLoading(false);
     }
@@ -54,41 +53,38 @@ export default function SuspendUserModal({
           &times;
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center text-red-600">
-          ⚠️ Suspender Usuario
+        <h2 className="text-2xl font-bold mb-4 text-center text-emerald-600">
+          ✅ Habilitar Usuario
         </h2>
 
-        <p className="text-center mb-4">
-          ¿Estás seguro de que deseas suspender a{" "}
-          <span className="font-semibold text-red-500">{user.username}</span>?
+        <p className="text-center mb-6">
+          ¿Estás seguro de que deseas habilitar a{" "}
+          <span className="font-semibold text-emerald-500">
+            {user.username}
+          </span>
+          ?
         </p>
 
-        <textarea
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          placeholder="Motivo de la suspensión..."
-          className="w-full p-2 rounded border bg-gray-50 dark:bg-gray-900 text-sm mb-3 resize-none h-24"
-        />
-
         {error && (
-          <p className="text-red-500 text-sm text-center mb-2">{error}</p>
+          <p className="text-red-500 text-sm text-center mb-3">{error}</p>
         )}
 
         {success && (
-          <p className="text-green-500 text-sm text-center mb-2">
-            ✅ Usuario suspendido con éxito
+          <p className="text-green-500 text-sm text-center mb-3">
+            ✅ Usuario habilitado con éxito
           </p>
         )}
 
         <button
-          onClick={handleSuspend}
+          onClick={handleEnable}
           disabled={loading}
           className="w-full py-3 rounded-xl text-lg font-semibold shadow-md text-white
-            bg-gradient-to-r from-red-500 to-red-700
+            bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600
+            dark:from-emerald-500 dark:via-teal-600 dark:to-cyan-700
             hover:brightness-110 hover:shadow-lg transition-all duration-300
             disabled:opacity-50"
         >
-          {loading ? "Suspendiendo..." : "Confirmar suspensión"}
+          {loading ? "Habilitando..." : "Confirmar habilitación"}
         </button>
       </div>
     </div>
