@@ -139,7 +139,8 @@ class AdminUserListView(APIView):
                 'id': user.id,
                 'username': user.username,
                 'email': user.email,
-                'credits': user.credits
+                'credits': user.credits,
+                'is_active': user.is_active
             }
             for user in users
         ]
@@ -287,3 +288,49 @@ def stripe_webhook(request):
 
 
     return HttpResponse(status=200)
+
+class AdminSuspendUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        reason = request.data.get('reason', '')
+
+        if not user_id:
+            return Response({'error': 'Falta el ID del usuario.'}, status=400)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado.'}, status=404)
+
+        if not user.is_active:
+            return Response({'message': 'El usuario ya está suspendido.'}, status=200)
+
+        user.is_active = False
+        user.save()
+
+        # Podrías guardar el motivo de suspensión en un modelo aparte si deseas
+        return Response({'message': f'El usuario {user.username} ha sido suspendido.'}, status=200)
+
+class AdminEnableUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+
+        if not user_id:
+            return Response({'error': 'Falta el ID del usuario.'}, status=400)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado.'}, status=404)
+
+        if user.is_active:
+            return Response({'message': 'El usuario ya está habilitado.'}, status=200)
+
+        user.is_active = True
+        user.save()
+
+        return Response({'message': f'El usuario {user.username} ha sido habilitado.'}, status=200)
