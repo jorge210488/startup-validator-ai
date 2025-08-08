@@ -10,6 +10,7 @@ import { useCreditStore } from "@/store/creditStore";
 
 export default function Navbar() {
   const { user, logout, accessToken } = useAuthStore();
+  console.log("role recibido", user?.is_superuser);
   const [isMounted, setIsMounted] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -42,7 +43,7 @@ export default function Navbar() {
   text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
   transition-all duration-300 text-base"
                 >
-                  💡Mis ideas
+                  💡Ideas
                 </Link>
                 <Link
                   href="/credits"
@@ -52,8 +53,20 @@ export default function Navbar() {
   text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
   transition-all duration-300 text-base"
                 >
-                  🔄 Ver transacciones
+                  🔄 Transacciones
                 </Link>
+                {user?.is_superuser && (
+                  <Link
+                    href="/admin"
+                    className="px-3 py-1.5 rounded-lg 
+      bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+      dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+      text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+      transition-all duration-300 text-base"
+                  >
+                    📊 Dashboard
+                  </Link>
+                )}
               </div>
             )}
           </div>
@@ -72,7 +85,7 @@ export default function Navbar() {
   text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
   transition-all duration-300 text-base"
                   >
-                    💡Mis ideas
+                    💡Ideas
                   </Link>
                   <Link
                     href="/credits"
@@ -82,8 +95,20 @@ export default function Navbar() {
   text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
   transition-all duration-300 text-base"
                   >
-                    🔄 Ver transacciones
+                    🔄 Transacciones
                   </Link>
+                  {user?.is_superuser && (
+                    <Link
+                      href="/admin"
+                      className="px-3 py-1.5 rounded-lg 
+      bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+      dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+      text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+      transition-all duration-300 text-base"
+                    >
+                      📊 Dashboard
+                    </Link>
+                  )}
                 </div>
 
                 <div className="flex gap-4 items-center">
