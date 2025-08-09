@@ -235,3 +235,8 @@ SIMPLE_JWT = {
     'TOKEN_OBTAIN_SERIALIZER': 'core.token.MyTokenObtainPairSerializer',
 }
 
+REST_AUTH_SERIALIZERS = {
+    "USER_DETAILS_SERIALIZER": "core.serializers.CustomUserDetailsSerializer",
+}
+
+REST_USE_JWT = True

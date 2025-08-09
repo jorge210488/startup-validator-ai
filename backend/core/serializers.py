@@ -34,3 +34,20 @@ class CheckoutSessionSerializer(serializers.Serializer):
 
 class ConfirmSessionSerializer(serializers.Serializer):
     session_id = serializers.CharField()
+    
+class CustomUserDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", "email", "credits")
+        read_only_fields = ("id", "credits")  # credits no editable
+
+    # (Opcional) validaciones de unicidad más amigables:
+    def validate_username(self, value):
+        if User.objects.exclude(pk=self.instance.pk).filter(username=value).exists():
+            raise serializers.ValidationError("Ese username ya está en uso.")
+        return value
+
+    def validate_email(self, value):
+        if value and User.objects.exclude(pk=self.instance.pk).filter(email=value).exists():
+            raise serializers.ValidationError("Ese email ya está en uso.")
+        return value
