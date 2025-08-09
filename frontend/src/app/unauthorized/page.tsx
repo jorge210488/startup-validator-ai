@@ -4,13 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
-import LoginModal from "@/components/LoginModal"; // 👈 Asegurate del casing
+import LoginModal from "@/components/LoginModal";
 
 export default function UnauthorizedPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false); // si aún no hay modal de registro, podés ignorarlo
+  const [showRegister, setShowRegister] = useState(false);
 
   const { accessToken } = useAuthStore();
 
@@ -76,7 +76,6 @@ export default function UnauthorizedPage() {
             Volver al inicio
           </Link>
 
-          {/* Solo mostrar el botón de login si NO está logueado */}
           {!isLoggedIn && (
             <button
               onClick={() => setShowLogin(true)}
@@ -91,13 +90,12 @@ export default function UnauthorizedPage() {
         </div>
       </main>
 
-      {/* Login modal: render condicional (tu componente NO usa isOpen) */}
       {!isLoggedIn && showLogin && (
         <LoginModal
           onClose={() => setShowLogin(false)}
           onOpenRegister={() => {
             setShowLogin(false);
-            setShowRegister(true); // si no tenés aún modal de registro, podés dejarlo sin uso
+            setShowRegister(true);
           }}
         />
       )}
