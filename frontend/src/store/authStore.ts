@@ -6,8 +6,8 @@ import { useCreditStore } from "@/store/creditStore";
 interface AuthState {
   accessToken: string | null;
   user: any | null;
-  setAuth: (token: string) => void;
-  logout: () => void;
+  setAuth: (token: string) => Promise<void>; // ⬅️ CHANGED: ahora async
+  logout: () => Promise<void>; // ⬅️ CHANGED: ahora async
 }
 
 export const useAuthStore = create(
@@ -16,20 +16,44 @@ export const useAuthStore = create(
       accessToken: null,
       user: null,
 
-      setAuth: (token) => {
+      // ⬇️ CHANGED: ahora async y setea cookie httpOnly en el server
+      setAuth: async (token) => {
         const user = getUserFromToken(token);
-        localStorage.setItem("accessToken", token);
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("accessToken", token);
+        }
+
         set({ accessToken: token, user });
 
-        // Traer créditos
+        // ⬇️ NEW: informar al server para que cree el cookie "accessToken"
+        try {
+          await fetch("/api/auth/set-cookie", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }), // ⬅️ acá mando la variable "token"
+          });
+        } catch (e) {
+          console.error("Failed to set cookie:", e);
+        }
+
+        // Traer créditos (como ya lo hacías)
         useCreditStore.getState().fetchCredits(token);
       },
 
-      logout: () => {
+      // ⬇️ CHANGED: ahora async y limpia cookie httpOnly
+      logout: async () => {
         set({ accessToken: null, user: null });
 
         // 🔸 Resetear créditos
         useCreditStore.getState().resetCredits();
+
+        // ⬇️ NEW: avisar al server para borrar el cookie
+        try {
+          await fetch("/api/auth/clear-cookie", { method: "POST" });
+        } catch (e) {
+          console.error("Failed to clear cookie:", e);
+        }
 
         if (typeof window !== "undefined") {
           localStorage.removeItem("auth-storage");
@@ -38,8 +62,6 @@ export const useAuthStore = create(
         }
       },
     }),
-    {
-      name: "auth-storage",
-    }
+    { name: "auth-storage" }
   )
 );
