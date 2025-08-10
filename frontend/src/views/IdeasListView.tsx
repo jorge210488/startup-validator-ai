@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
-import SubmitIdeaModal from "@/components/SubmitIdeaModal";
+import SubmitIdeaModal from "@/components/Ideas/SubmitIdeaModal";
 import { getMyIdeas } from "@/services/ideasService";
-import IdeaDetailModal from "@/components/IdeaDetailModal";
+import IdeaDetailModal from "@/components/Ideas/IdeaDetailModal";
 
 interface StartupIdea {
   id: number;

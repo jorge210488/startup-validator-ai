@@ -1,4 +1,3 @@
-// services/ideaService.ts
 import api from "./api";
 
 export const submitIdea = async (originalText: string, token: string) => {
@@ -11,7 +10,7 @@ export const submitIdea = async (originalText: string, token: string) => {
       },
     }
   );
-  return response.data.idea; // ✅ devolvemos solo la idea
+  return response.data.idea;
 };
 
 export const getMyIdeas = async (token: string) => {
@@ -21,7 +20,7 @@ export const getMyIdeas = async (token: string) => {
     },
   });
 
-  return response.data; // ← esto será un array
+  return response.data;
 };
 
 export const getIdeaById = async (id: number, token: string) => {
@@ -30,5 +29,5 @@ export const getIdeaById = async (id: number, token: string) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data; // ⬅ Devuelve solo una idea
+  return response.data;
 };

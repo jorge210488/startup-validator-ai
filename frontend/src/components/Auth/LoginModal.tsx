@@ -1,41 +1,100 @@
+// src/components/LoginModal.tsx
 "use client";
 
 import { useState } from "react";
-import { login } from "@/services/authService";
+import { useRouter } from "next/navigation";
+import { login, socialLoginGoogle } from "@/services/authService";
 import { useAuthStore } from "@/store/authStore";
+import { useGoogleLogin } from "@react-oauth/google";
 
 type LoginModalProps = {
   onClose: () => void;
-  onOpenRegister: () => void; // ✅ nuevo prop
+  onOpenRegister: () => void;
+  redirectTo?: string;
 };
 
 export default function LoginModal({
   onClose,
   onOpenRegister,
+  redirectTo,
 }: LoginModalProps) {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
   const setAuth = useAuthStore((state) => state.setAuth);
+
+  const finishLogin = async (access: string, refresh?: string) => {
+    console.log(
+      "[finishLogin] access.length:",
+      access?.length,
+      "has refresh?",
+      !!refresh
+    );
+    localStorage.setItem("accessToken", access);
+    if (refresh) localStorage.setItem("refreshToken", refresh);
+    await Promise.resolve(setAuth(access));
+    onClose();
+    router.replace(redirectTo || "/");
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     try {
+      console.log("[handleLogin] username:", username);
       const res = await login(username, password);
+      console.log("[handleLogin] backend res.data:", res.data);
       const { access, refresh } = res.data;
-
-      localStorage.setItem("accessToken", access);
-      localStorage.setItem("refreshToken", refresh);
-      setAuth(access);
-      onClose();
+      await finishLogin(access, refresh);
     } catch (err: any) {
+      console.error(
+        "[handleLogin] error:",
+        err?.response?.status,
+        err?.response?.data || err?.message
+      );
       setError("Usuario o contraseña inválidos.");
-      console.error("Login error:", err.response?.data || err.message);
     }
   };
+
+  // ---------- GOOGLE: Implicit Flow (access_token) ----------
+  const googleAuth = useGoogleLogin({
+    flow: "implicit",
+    scope: "openid email profile",
+    onSuccess: async (resp) => {
+      try {
+        const accessToken = resp?.access_token;
+        if (!accessToken) {
+          setError("No se recibió access_token de Google.");
+          return;
+        }
+        console.log("[googleAuth] access_token length:", accessToken.length);
+
+        // Enviar access_token al backend
+        const res = await socialLoginGoogle(accessToken, false);
+        console.log("[googleAuth] backend res.data:", res.data);
+
+        const { access, refresh } = res.data;
+        await finishLogin(access, refresh);
+      } catch (e: any) {
+        console.error(
+          "[googleAuth] backend error:",
+          e?.response?.status,
+          e?.response?.data || e?.message
+        );
+        setError(
+          e?.response?.data?.non_field_errors?.[0] ||
+            e?.response?.data?.detail ||
+            "No se pudo iniciar sesión con Google."
+        );
+      }
+    },
+    onError: () => {
+      console.error("[googleAuth] onError");
+      setError("Error con Google. Intenta de nuevo.");
+    },
+  });
+  // -------------------------------------------------------
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
@@ -43,6 +102,7 @@ export default function LoginModal({
         <button
           onClick={onClose}
           className="absolute top-2 right-3 text-xl text-gray-500 hover:text-red-500"
+          aria-label="Cerrar"
         >
           &times;
         </button>
@@ -68,6 +128,7 @@ export default function LoginModal({
             className="px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
             required
           />
+
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
@@ -80,18 +141,19 @@ export default function LoginModal({
 
         <div className="mt-4 flex flex-col gap-2">
           <button
+            type="button"
             className="w-full py-2 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-            onClick={() =>
-              (window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/dj-rest-auth/google/login/`)
-            }
+            onClick={() => {
+              console.log("[UI] Google button clicked");
+              googleAuth();
+            }}
           >
             🔵 Iniciar con Google
           </button>
+
           <button
             className="w-full py-2 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-            onClick={() =>
-              (window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/dj-rest-auth/linkedin_oauth2/login/`)
-            }
+            onClick={() => alert("Próximamente LinkedIn")}
           >
             💼 Iniciar con LinkedIn
           </button>
@@ -102,8 +164,8 @@ export default function LoginModal({
           <button
             className="text-blue-500 hover:underline"
             onClick={() => {
-              onClose(); // 👈 cerrar login
-              onOpenRegister(); // 👈 abrir register
+              onClose();
+              onOpenRegister();
             }}
           >
             Regístrate aquí

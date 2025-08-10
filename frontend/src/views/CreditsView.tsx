@@ -4,10 +4,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { getMyCreditTransactions } from "@/services/creditsService";
-import CreditTransactionItem from "@/components/CreditTransactionItem";
+import CreditTransactionItem from "@/components/Credits/CreditTransactionItem";
 import Link from "next/link";
 import { useCreditStore } from "@/store/creditStore";
-import StripePaymentModal from "@/components/StripePaymentModal";
+import StripePaymentModal from "@/components/Credits/StripePaymentModal";
 
 interface Transaction {
   amount: number;
@@ -50,7 +50,7 @@ export default function CreditsView() {
     getMyCreditTransactions(accessToken)
       .then((data) => setTransactions(data))
       .catch((err) => console.error("❌ Error al obtener transacciones:", err))
-      .finally(() => setLoading(false)); // ← Esto faltaba
+      .finally(() => setLoading(false));
   }, [accessToken]);
 
   if (!isMounted) return null;

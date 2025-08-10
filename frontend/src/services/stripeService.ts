@@ -1,7 +1,5 @@
-// services/stripeService.ts
 import api from "./api";
 
-// 🔹 Crear sesión de pago con Stripe
 export const createStripeSession = async (
   amount: number,
   token: string
@@ -15,10 +13,9 @@ export const createStripeSession = async (
       },
     }
   );
-  return response.data; // { checkout_url }
+  return response.data;
 };
 
-// 🔹 (Opcional) Confirmar el pago desde el frontend después de volver de Stripe
 export const confirmStripePayment = async (
   sessionId: string,
   token: string
@@ -32,5 +29,5 @@ export const confirmStripePayment = async (
       },
     }
   );
-  return response.data; // { status, credits_added }
+  return response.data;
 };

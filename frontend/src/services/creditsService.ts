@@ -1,16 +1,14 @@
 import api from "./api";
 
-// 🔹 Obtener historial de transacciones de créditos del usuario
 export const getMyCreditTransactions = async (token: string) => {
   const response = await api.get("/my-credit-transactions/", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data; // ← Array de transacciones
+  return response.data;
 };
 
-// 🔹 Recargar créditos como admin (opcional, solo para administradores)
 export const adminRechargeCredits = async (
   userId: number,
   amount: number,
@@ -30,7 +28,7 @@ export const adminRechargeCredits = async (
       },
     }
   );
-  return response.data; // ← { message, new_credits }
+  return response.data;
 };
 
 export const getMe = async (token: string) => {
@@ -39,10 +37,9 @@ export const getMe = async (token: string) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data; // ← { id, username, email, credits }
+  return response.data;
 };
 
-// 🔹 Confirmar pago de Stripe desde frontend
 export const confirmStripeSession = async (
   sessionId: string,
   token: string
@@ -56,5 +53,5 @@ export const confirmStripeSession = async (
       },
     }
   );
-  return response.data; // ← { message } o { error }
+  return response.data;
 };

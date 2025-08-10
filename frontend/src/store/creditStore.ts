@@ -1,4 +1,3 @@
-// store/creditStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { getMe } from "@/services/creditsService";
@@ -15,7 +14,6 @@ export const useCreditStore = create(
     (set) => ({
       credits: 0,
 
-      // Cargar créditos desde el backend
       fetchCredits: async (token: string) => {
         try {
           const user = await getMe(token);
@@ -27,12 +25,10 @@ export const useCreditStore = create(
         }
       },
 
-      // Establecer manualmente
       setCredits: (value: number) => {
         set({ credits: value });
       },
 
-      // Limpiar créditos (por ejemplo al cerrar sesión)
       resetCredits: () => {
         set({ credits: 0 });
       },

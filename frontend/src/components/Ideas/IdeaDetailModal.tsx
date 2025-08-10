@@ -18,7 +18,6 @@ export default function IdeaDetailModal({
   const { accessToken } = useAuthStore();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Cerrar al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

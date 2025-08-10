@@ -3,17 +3,18 @@
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
-import LoginModal from "./LoginModal";
-import RegisterModal from "./RegisterModal";
-import DarkModeToggle from "./DarkModeToggle";
+import LoginModal from "./Auth/LoginModal";
+import RegisterModal from "./Auth/RegisterModal";
+import DarkModeToggle from "./Layout/DarkModeToggle";
 import { useCreditStore } from "@/store/creditStore";
+import UpdateUserModal from "./Auth/UpdateUserModal";
 
 export default function Navbar() {
   const { user, logout, accessToken } = useAuthStore();
-  console.log("role recibido", user?.is_superuser);
   const [isMounted, setIsMounted] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const { credits } = useCreditStore();
 
   useEffect(() => {
@@ -76,24 +77,25 @@ export default function Navbar() {
             {/* SOLO EN MÓVIL Y LOGUEADO */}
             {accessToken && (
               <div className="flex flex-col items-center gap-4 md:hidden">
+                {/* Links */}
                 <div className="flex gap-4">
                   <Link
                     href="/ideas"
                     className="px-3 py-1.5 rounded-lg 
-  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
-  dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
-  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
-  transition-all duration-300 text-base"
+bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+transition-all duration-300 text-base"
                   >
                     💡Ideas
                   </Link>
                   <Link
                     href="/credits"
                     className="px-3 py-1.5 rounded-lg 
-  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
-  dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
-  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
-  transition-all duration-300 text-base"
+bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+transition-all duration-300 text-base"
                   >
                     🔄 Transacciones
                   </Link>
@@ -101,29 +103,43 @@ export default function Navbar() {
                     <Link
                       href="/admin"
                       className="px-3 py-1.5 rounded-lg 
-      bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
-      dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
-      text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
-      transition-all duration-300 text-base"
+bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+dark:from-indigo-700 dark:via-purple-800 dark:to-pink-700 
+text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+transition-all duration-300 text-base"
                     >
                       📊 Dashboard
                     </Link>
                   )}
                 </div>
 
-                <div className="flex gap-4 items-center">
-                  <div className="text-base font-bold text-black dark:text-white">
-                    {user?.email && <span>{user.email}</span>} · {credits ?? 0}{" "}
-                    créditos
+                {/* Perfil + acciones en una sola fila */}
+                <div className="flex items-center justify-center gap-6">
+                  {/* Email y créditos */}
+                  <div className="flex flex-col items-center text-center">
+                    <button
+                      onClick={() => setShowUpdateModal(true)}
+                      className="text-base font-bold text-black dark:text-white underline underline-offset-4 hover:opacity-80 transition"
+                      aria-label="Abrir perfil"
+                    >
+                      {user?.email || "Perfil"}
+                    </button>
+                    <span className="text-sm font-bold text-black dark:text-white">
+                      {credits ?? 0} créditos
+                    </span>
                   </div>
+
+                  {/* Tema */}
                   <DarkModeToggle />
+
+                  {/* Cerrar sesión */}
                   <button
                     onClick={logout}
                     className="px-3 py-1.5 rounded-lg 
-  bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 
-  dark:from-gray-600 dark:via-gray-700 dark:to-gray-800 
-  text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
-  transition-all duration-300 text-base"
+bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 
+dark:from-gray-600 dark:via-gray-700 dark:to-gray-800 
+text-white font-medium hover:brightness-110 shadow-md hover:shadow-lg 
+transition-all duration-300 text-base"
                   >
                     Cerrar sesión
                   </button>
@@ -134,10 +150,16 @@ export default function Navbar() {
             {/* VISTA MD+ LOGUEADO */}
             {accessToken && (
               <div className="hidden md:flex items-center gap-4 text-base font-bold">
-                <div className="text-black dark:text-white">
-                  {user?.email && <span>{user.email}</span>} · {credits ?? 0}{" "}
-                  créditos
-                </div>
+                <button
+                  onClick={() => setShowUpdateModal(true)} // 👈 abre modal al tocar el email
+                  className="text-black dark:text-white underline underline-offset-4 hover:opacity-80 transition"
+                  aria-label="Abrir perfil"
+                >
+                  {user?.email || "Perfil"}
+                </button>
+                <span className="text-black dark:text-white">
+                  · {credits ?? 0} créditos
+                </span>
                 <DarkModeToggle />
                 <button
                   onClick={logout}
@@ -213,6 +235,13 @@ export default function Navbar() {
             setShowRegisterModal(false);
             setShowLoginModal(true);
           }}
+        />
+      )}
+
+      {accessToken && (
+        <UpdateUserModal
+          isOpen={showUpdateModal}
+          onClose={() => setShowUpdateModal(false)}
         />
       )}
     </>

@@ -29,7 +29,7 @@ export default function StripePaymentModal({
 
     try {
       const res = await createStripeSession(selectedAmount, accessToken);
-      window.location.href = res.checkout_url; // redirige a Stripe Checkout
+      window.location.href = res.checkout_url;
     } catch (err: any) {
       console.error("Stripe error:", err);
       setError("Hubo un error al iniciar el pago.");

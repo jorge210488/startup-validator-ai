@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { getAdminUsers } from "@/services/adminService";
-// Importar los componentes de modales de recarga y suspensión (a implementar por separado)
 import RechargeCreditModal from "@/components//Admin/RechargeCreditModal";
 import SuspendUserModal from "@/components/Admin/SuspendUserModal";
 import EnableUserModal from "@/components/Admin/EnableUserModal";
@@ -33,7 +32,6 @@ export default function AdminDashboard() {
     );
   };
 
-  // Detectar cambios de tema (claro/oscuro) para actualizar el fondo
   useEffect(() => {
     setIsMounted(true);
     const updateTheme = () => {
@@ -52,7 +50,7 @@ export default function AdminDashboard() {
     if (!accessToken) return;
     getAdminUsers(accessToken)
       .then((users) => {
-        setUsers(users); // ya devuelve el array
+        setUsers(users);
       })
       .catch((err) => console.error("❌ Error al obtener usuarios:", err))
       .finally(() => setLoading(false));
@@ -115,7 +113,7 @@ export default function AdminDashboard() {
                   <button
                     onClick={() => {
                       setUserToRecharge(user);
-                      setUserToSuspend(null); // asegurarse de cerrar otro modal si estuviera abierto
+                      setUserToSuspend(null);
                     }}
                     className="px-4 py-2 rounded-lg text-white 
                                bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 

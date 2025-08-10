@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
-import LoginModal from "@/components/LoginModal";
+import LoginModal from "@/components/Auth/LoginModal";
 
 export default function UnauthorizedPage() {
   const [isMounted, setIsMounted] = useState(false);

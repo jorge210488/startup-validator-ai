@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
-import RegisterModal from "@/components/RegisterModal";
-import LoginModal from "@/components/LoginModal";
+import RegisterModal from "@/components/Auth/RegisterModal";
+import LoginModal from "@/components/Auth/LoginModal";
 
 export default function HomeView() {
   const [isMounted, setIsMounted] = useState(false);

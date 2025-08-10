@@ -1,4 +1,3 @@
-// components/CreditTransactionItem.tsx
 "use client";
 
 import { FC, useEffect, useState } from "react";
@@ -13,7 +12,6 @@ const CreditTransactionItem: FC<Props> = ({ amount, reason, created_at }) => {
   const isPositive = amount > 0;
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Detectar si está en modo oscuro
   useEffect(() => {
     const updateTheme = () => {
       setIsDarkMode(document.documentElement.classList.contains("dark"));

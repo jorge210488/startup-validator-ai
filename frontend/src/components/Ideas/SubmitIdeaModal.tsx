@@ -34,7 +34,7 @@ export default function SubmitIdeaModal({ onClose }: SubmitIdeaModalProps) {
 
     try {
       await submitIdea(originalText, accessToken);
-      onClose(); // Cierra el modal al éxito
+      onClose();
     } catch (err: any) {
       console.error("Error al enviar idea:", err.response?.data || err.message);
       setError(err.response?.data?.error || "Ocurrió un error inesperado.");

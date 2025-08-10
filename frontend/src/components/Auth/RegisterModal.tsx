@@ -6,7 +6,7 @@ import { register } from "@/services/authService";
 
 type RegisterModalProps = {
   onClose: () => void;
-  onOpenLogin: () => void; // ✅ nueva prop
+  onOpenLogin: () => void;
 };
 
 export default function RegisterModal({
@@ -106,8 +106,8 @@ export default function RegisterModal({
           <button
             className="text-blue-500 hover:underline"
             onClick={() => {
-              onClose(); // cerrar register
-              onOpenLogin(); // abrir login
+              onClose();
+              onOpenLogin();
             }}
           >
             Inicia sesión aquí
