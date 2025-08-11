@@ -18,10 +18,10 @@ colorama==0.4.6
 cryptography==45.0.4
 defusedxml==0.7.1
 distro==1.9.0
-dj-rest-auth==7.0.1
+dj-rest-auth==6.0.0
 dj-rest-auth-social==2.2.4
 Django==5.2.2
-django-allauth==0.51.0
+django-allauth==0.63.6
 django-cors-headers==4.7.0
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0

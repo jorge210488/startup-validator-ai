@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AdminEnableUserView, AdminSuspendUserView, SubmitIdeaView, UserIdeasView, RetrieveIdeaView, MeView, UserCreditTransactionsView, AdminRechargeCreditsView, AdminUserListView, PublicIdeasView, MakeIdeaPublicView, CreateStripePaymentView, ConfirmPaymentView, stripe_webhook
+from .views import GoogleLogin, AdminEnableUserView, AdminSuspendUserView, SubmitIdeaView, UserIdeasView, RetrieveIdeaView, MeView, UserCreditTransactionsView, AdminRechargeCreditsView, AdminUserListView, PublicIdeasView, MakeIdeaPublicView, CreateStripePaymentView, ConfirmPaymentView, stripe_webhook
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
@@ -18,5 +18,6 @@ urlpatterns = [
     path("stripe/webhook/", stripe_webhook, name="stripe_webhook"),
     path('admin-suspender-usuario/', AdminSuspendUserView.as_view(), name='admin_suspend_user'),
     path('admin-habilitar-usuario/', AdminEnableUserView.as_view(), name='admin_enable_user'),
+    path('dj-rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
 ]
 

@@ -14,6 +14,10 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import json
+from dj_rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from rest_framework_simplejwt.tokens import RefreshToken 
+
 
 User = get_user_model()
 
@@ -334,3 +338,26 @@ class AdminEnableUserView(APIView):
         user.save()
 
         return Response({'message': f'El usuario {user.username} ha sido habilitado.'}, status=200)
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+
+    # Este método lo llama dj-rest-auth cuando el login social fue exitoso.
+    # Sobrescribimos para retornar JWT {access, refresh}.
+    def get_response(self):
+        user = self.user  # ya autenticado por dj-rest-auth/allauth
+        if not user or not user.is_authenticated:
+            # fallback por si algo raro pasó
+            return super().get_response()
+
+        refresh = RefreshToken.for_user(user)
+        data = {
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    # (opcional) deja el print para debug mientras tanto
+    def post(self, request, *args, **kwargs):
+        print("[/dj-rest-auth/google] data:", request.data)
+        return super().post(request, *args, **kwargs)

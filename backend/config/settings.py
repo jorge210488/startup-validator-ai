@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     # Apps de Django por defecto
     'django.contrib.admin',
     'django.contrib.auth',
+    'dj_rest_auth.registration',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -104,7 +105,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'allauth.account.middleware.AccountMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -190,7 +191,7 @@ EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='no-reply@miapp.local')
 
 # Channels
 ASGI_APPLICATION = 'config.asgi.application'
@@ -206,21 +207,19 @@ CHANNEL_LAYERS = {
 
 # FIX CREDENTIALS
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': config('SOCIAL_AUTH_GOOGLE_CLIENT_ID'),
-            'secret': config('SOCIAL_AUTH_GOOGLE_SECRET'),
-            'key': ''
-        }
-    },
-    'linkedin_oauth2': {
-        'APP': {
-            'client_id': config('SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY'),
-            'secret': config('SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET'),
-            'key': ''
-        }
+    "google": {
+        "APP": {
+            "client_id": config("SOCIAL_AUTH_GOOGLE_CLIENT_ID"),
+            "secret": config("SOCIAL_AUTH_GOOGLE_SECRET"),
+            "key": "",
+        },
+        "SCOPE": ["openid", "email", "profile"],
+        "AUTH_PARAMS": {"access_type": "offline", "prompt": "consent"},
     }
 }
+
+
+GOOGLE_REDIRECT_URI = config('GOOGLE_REDIRECT_URI')  # misma URL que en el frontend
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -240,3 +239,48 @@ REST_AUTH_SERIALIZERS = {
 }
 
 REST_USE_JWT = True
+
+import os
+import sys
+
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{levelname}] {asctime} {name} | {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "[{levelname}] {name}: {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+            "formatter": "verbose",
+        },
+    },
+    "root": {  # captura todo
+        "handlers": ["console"],
+        "level": LOG_LEVEL,
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
+        # tu app
+        "core": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
+    },
+}
+

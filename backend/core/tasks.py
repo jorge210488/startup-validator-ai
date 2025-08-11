@@ -1,3 +1,5 @@
+# tasks.py
+import logging
 from celery import shared_task
 from openai import OpenAI
 from decouple import config
@@ -6,6 +8,9 @@ from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 client = OpenAI(api_key=config('OPENAI_API_KEY'))
 
@@ -30,26 +35,25 @@ def analyze_startup_idea(idea_id, idea_text):
         result = response.choices[0].message.content
         idea.ai_response = result
         idea.status = 'completed'
+        logger.info("✅ OpenAI response saved for idea_id=%s", idea_id)
     except Exception as e:
         result = f"Error al procesar la idea: {str(e)}"
         idea.ai_response = result
         idea.status = 'error'
+        logger.exception("❌ OpenAI error for idea_id=%s", idea_id)
 
-    # 🟢 Intentar extraer el nombre sugerido
+    # Extract suggested name (best-effort)
     nombre_sugerido = "Startup"
     try:
         for line in result.split('\n'):
             if "2." in line and "nombre" in line.lower():
                 parts = line.split(":")
-                if len(parts) > 1:
-                    nombre_sugerido = parts[1].strip()
-                else:
-                    nombre_sugerido = "Startup"
+                nombre_sugerido = parts[1].strip() if len(parts) > 1 else "Startup"
                 break
-    except Exception as e:
-        nombre_sugerido = "Startup"
+    except Exception:
+        logger.warning("⚠️ Could not extract suggested name for idea_id=%s", idea_id)
 
-    # 🟢 Generar logo
+    # Generate logo (best-effort)
     try:
         logo_prompt = f"""
         Logo minimalista y profesional para la marca "{nombre_sugerido}".
@@ -66,32 +70,36 @@ def analyze_startup_idea(idea_id, idea_text):
         )
         logo_url = image_response.data[0].url
         idea.logo_url = logo_url
-    except Exception as e:
+        logger.info("🖼️ Logo generated for idea_id=%s", idea_id)
+    except Exception:
         idea.logo_url = None
+        logger.exception("❌ Logo generation failed for idea_id=%s", idea_id)
 
-    # Guardar cambios en la idea
     idea.save()
 
-    # 🟢 Enviar email al usuario
-    User = get_user_model()
-    user_email = idea.user.email  # asumiendo que StartupIdea tiene FK a User con campo user
+    # Send email (CON LOGGING)
+    try:
+        user_email = idea.user.email
+        send_mail(
+            subject='Tu análisis de Startup está listo 🚀',
+            message=f'Hola! Tu análisis de la idea "{idea_text}" ya fue procesado. Puedes verlo en la plataforma.',
+            from_email=settings.DEFAULT_FROM_EMAIL,  # usa el remitente correcto
+            recipient_list=[user_email],
+            fail_silently=False,  # importante para ver errores en logs
+        )
+        logger.info("📧 Email sent to %s for idea_id=%s", user_email, idea_id)
+    except Exception:
+        logger.exception("❌ Email sending failed for idea_id=%s", idea_id)
 
-    send_mail(
-        subject='Tu análisis de Startup está listo 🚀',
-        message=f'Hola! Tu análisis de la idea "{idea_text}" ya fue procesado. Puedes verlo en la plataforma.',
-        from_email=None,  # usará DEFAULT_FROM_EMAIL
-        recipient_list=[user_email],
-        fail_silently=True,
-    )
-
-    # 🟢 Emitir WebSocket notification
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"user_{idea.user.id}",
-        {
-            "type": "send_notification",
-            "message": f"Tu idea '{idea_text}' ya fue procesada 🎉",
-        }
-    )
+    # WebSocket notification
+    try:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"user_{idea.user.id}",
+            {"type": "send_notification", "message": f"Tu idea '{idea_text}' ya fue procesada 🎉"}
+        )
+        logger.info("🔔 WebSocket notification sent for idea_id=%s", idea_id)
+    except Exception:
+        logger.exception("❌ WebSocket notification failed for idea_id=%s", idea_id)
 
     return f"Idea {idea_id} analizada correctamente"
