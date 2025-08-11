@@ -1,7 +1,3 @@
-Perfecto, aquí tienes el **README** ajustado y consistente, manteniendo toda tu información y el mismo formato:
-
----
-
 # Startup Validator AI
 
 ![Startup Validator AI Home](frontend/public/startup_validator1.png)
